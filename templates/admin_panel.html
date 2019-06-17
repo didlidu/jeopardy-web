@@ -1,0 +1,82 @@
+<!DOCTYPE HTML>
+{% load static %}
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+        <script>
+            var csrf_token = "{{ csrf_token }}";
+        </script>
+    </head>
+<body>
+
+    <div class="main">
+        <div id="table" class="content" style="display:none">
+            <div class="table-row">
+                <div class="cell cell-title"><p class="cell-text">Заголовок</p></div>
+                <div class="cell cell-price"><p class="cell-text">100</p></div>
+                <div class="cell cell-price"><p class="cell-text">200</p></div>
+                <div class="cell cell-price"><p class="cell-text">300</p></div>
+                <div class="cell cell-price"><p class="cell-text">400</p></div>
+                <div class="cell cell-price"><p class="cell-text">500</p></div>
+            </div>
+            <div class="table-row">
+                <div class="cell cell-title"><p class="cell-text">Заголовок</p></div>
+                <div class="cell cell-price"><p class="cell-text">100</p></div>
+                <div class="cell cell-price"><p class="cell-text">200</p></div>
+                <div class="cell cell-price"><p class="cell-text">300</p></div>
+                <div class="cell cell-price"><p class="cell-text">400</p></div>
+                <div class="cell cell-price"><p class="cell-text">500</p></div>
+            </div>
+            <div class="table-row">
+                <div class="cell cell-title"><p class="cell-text">Заголовок</p></div>
+                <div class="cell cell-price"><p class="cell-text">100</p></div>
+                <div class="cell cell-price"><p class="cell-text">200</p></div>
+                <div class="cell cell-price"><p class="cell-text">300</p></div>
+                <div class="cell cell-price"><p class="cell-text">400</p></div>
+                <div class="cell cell-price"><p class="cell-text">500</p></div>
+            </div>
+            <div class="table-row">
+                <div class="cell cell-title"><p class="cell-text">Заголовок</p></div>
+                <div class="cell cell-price"><p class="cell-text">100</p></div>
+                <div class="cell cell-price"><p class="cell-text">200</p></div>
+                <div class="cell cell-price"><p class="cell-text">300</p></div>
+                <div class="cell cell-price"><p class="cell-text">400</p></div>
+                <div class="cell cell-price"><p class="cell-text">500</p></div>
+            </div>
+            <div class="table-row">
+                <div class="cell cell-title"><p class="cell-text">Заголовок</p></div>
+                <div class="cell cell-price"><p class="cell-text">100</p></div>
+                <div class="cell cell-price"><p class="cell-text">200</p></div>
+                <div class="cell cell-price"><p class="cell-text">300</p></div>
+                <div class="cell cell-price"><p class="cell-text">400</p></div>
+                <div class="cell cell-price"><p class="cell-text">500</p></div>
+            </div>
+            <div class="table-row">
+                <div class="cell cell-title"><p class="cell-text">Заголовок</p></div>
+                <div class="cell cell-price"><p class="cell-text">100</p></div>
+                <div class="cell cell-price"><p class="cell-text">200</p></div>
+                <div class="cell cell-price"><p class="cell-text">300</p></div>
+                <div class="cell cell-price"><p class="cell-text">400</p></div>
+                <div class="cell cell-price"><p class="cell-text">500</p></div>
+            </div>
+        </div>
+
+        <div id="questionText" class="content question-text" style="display:none">
+            <p class="cell-text" style="padding: 50px 50px 50px 50px">
+                Длинный длинный длинный длинный длинный длинный длинный длинный длинный длинный
+                длинный длинный длинный длинный длинный длинный длинный длинный длинный длинный длинный длинный
+                длинный длинный длинный длинный длинный длинный длинный длинный длинный длинный длинный длинный
+                длинный вопрос
+            </p>
+        </div>
+
+        <div id="questionImage" class="content" style="display:none">
+            <img
+                class="question-image"
+                src="https://images.freeimages.com/images/large-previews/a0c/daffodil-1378489.jpg"
+                alt="Ошибка при загрузке изображения">
+        </div>
+
+    </div>
+
+</body>

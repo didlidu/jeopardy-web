@@ -1,0 +1,88 @@
+body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background-color: #31495e;
+}
+
+.main {
+    height:90vh;
+    background-color: #7a808c;
+    margin: 5vh 5vh 5vh 5vh;
+}
+
+.content {
+    height: 100%;
+    overflow:hidden;
+}
+
+.table-row {
+    display: flex;
+    height: 16.6666%;
+}
+
+.cell {
+    background-color: #535456;
+    margin: 10px 10px 10px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cell:hover {
+    background-color: #404142;
+    cursor: pointer;
+}
+
+.cell-title {
+    flex: 2;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    font-size: 35px;
+    color: white;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.cell-title:hover {
+    font-size: 37px;
+    color: #dedfe0;
+    cursor: pointer;
+}
+
+.cell-price {
+    flex: 1;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    font-size: 50px;
+    color: #e2dd7c;
+    text-shadow: 1px 1px 2px black, 0 0 1em black;
+}
+
+.cell-price:hover {
+    font-size: 55px;
+    color: #ceca77;
+}
+
+.cell-text {
+    display: table-cell;
+}
+
+.question-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    font-size: 50px;
+    color: #e2dd7c;
+    text-align: center
+}
+
+.question-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+
+.bottom {
+    position:absolute;
+    bottom:0;
+}
