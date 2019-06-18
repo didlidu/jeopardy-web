@@ -19,5 +19,6 @@ from django.urls import path
 from app import views
 
 urlpatterns = [
+    path('', views.get_player_panel),
     path('admin/', views.get_admin_panel),
 ]

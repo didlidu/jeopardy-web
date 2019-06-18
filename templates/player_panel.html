@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+{% load static %}
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="{% static 'css/player.css' %}">
+        <script>
+            var csrf_token = "{{ csrf_token }}";
+        </script>
+    </head>
+<body>
+
+    <header>
+
+    </header>
+
+    <section>
+        <div class="wrapper">
+            <div class="column1">
+                <div id="button_holder" class="big-red-button-holder" style="display:none">
+                    <a class="big-red-button"></a>
+                </div>
+                <div id="auth_holder" class="auth-holder">
+                    <input class="auth-input" placeholder="Имя" required>
+                    <input class="auth-input" placeholder="Код игры" required>
+                    <a class="auth-button">ВХОД</a>
+                </div>
+            </div>
+            <div class="column2">
+                <div class="user-info-holder" style="display:none">
+                    <p class="text-name">Имя</p>
+                    <p class="text-balance">3000</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</body>

@@ -2,7 +2,7 @@
 {% load static %}
 <html>
     <head>
-        <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/admin.css' %}">
         <script>
             var csrf_token = "{{ csrf_token }}";
         </script>
@@ -61,12 +61,72 @@
             </div>
         </div>
 
+        <div id="topics_all" class="content" style="display:none">
+            <div class="table-row">
+                <div class="cell cell-title yellow-border"><p class="cell-text">Тема</p></div>
+                <div class="cell cell-title yellow-border"><p class="cell-text">Тема</p></div>
+                <div class="cell cell-title yellow-border"><p class="cell-text">Тема</p></div>
+            </div>
+            <div class="table-row">
+                <div class="cell cell-title yellow-border"><p class="cell-text">Тема</p></div>
+                <div class="cell cell-title yellow-border"><p class="cell-text">Тема</p></div>
+                <div class="cell cell-title yellow-border"><p class="cell-text">Тема</p></div>
+            </div>
+            <div class="table-row">
+                <div class="cell cell-title yellow-border"><p class="cell-text">Тема</p></div>
+                <div class="cell cell-title yellow-border"><p class="cell-text">Тема</p></div>
+                <div class="cell cell-title yellow-border"><p class="cell-text">Тема</p></div>
+            </div>
+            <div class="table-row">
+                <div class="cell cell-title yellow-border"><p class="cell-text">Тема</p></div>
+                <div class="cell cell-title yellow-border"><p class="cell-text">Тема</p></div>
+                <div class="cell cell-title yellow-border"><p class="cell-text">Тема</p></div>
+            </div>
+            <div class="table-row">
+                <div class="cell cell-title yellow-border"><p class="cell-text">Тема</p></div>
+                <div class="cell cell-title yellow-border"><p class="cell-text">Тема</p></div>
+                <div class="cell cell-title yellow-border"><p class="cell-text">Тема</p></div>
+            </div>
+            <div class="table-row">
+                <div class="cell cell-title yellow-border"><p class="cell-text">Тема</p></div>
+                <div class="cell cell-title yellow-border"><p class="cell-text">Тема</p></div>
+                <div class="cell cell-title yellow-border"><p class="cell-text">Тема</p></div>
+            </div>
+        </div>
+
+        <div id="topics_final" class="content" style="display:none">
+            <div class="table-row table-row-final">
+                <div class="cell cell-title cell-final"><p class="cell-text">Тема финала</p></div>
+            </div>
+            <div class="table-row table-row-final">
+                <div class="cell cell-title cell-final"><p class="cell-text">Тема финала</p></div>
+            </div>
+            <div class="table-row table-row-final">
+                <div class="cell cell-title cell-final"><p class="cell-text">Тема финала</p></div>
+            </div>
+            <div class="table-row table-row-final">
+                <div class="cell cell-title cell-final"><p class="cell-text">Тема финала</p></div>
+            </div>
+            <div class="table-row table-row-final">
+                <div class="cell cell-title cell-final"><p class="cell-text">Тема финала</p></div>
+            </div>
+            <div class="table-row table-row-final">
+                <div class="cell cell-title cell-final"><p class="cell-text">Тема финала</p></div>
+            </div>
+        </div>
+
         <div id="questionText" class="content question-text" style="display:none">
             <p class="cell-text" style="padding: 50px 50px 50px 50px">
                 Длинный длинный длинный длинный длинный длинный длинный длинный длинный длинный
                 длинный длинный длинный длинный длинный длинный длинный длинный длинный длинный длинный длинный
                 длинный длинный длинный длинный длинный длинный длинный длинный длинный длинный длинный длинный
                 длинный вопрос
+            </p>
+        </div>
+
+        <div id="event" class="content event-text">
+            <p class="cell-text" style="padding: 50px 50px 50px 50px">
+                Кот в мешке
             </p>
         </div>
 
@@ -78,5 +138,13 @@
         </div>
 
     </div>
+
+    <footer>
+        <div class="non-selectable-cell footer-cell-title"><p class="cell-text">УЧАСТНИК1</p></div>
+        <div class="non-selectable-cell footer-cell-title"><p class="cell-text">УЧАСТНИК2</p></div>
+        <div class="non-selectable-cell footer-cell-title"><p class="cell-text">УЧАСТНИК3</p></div>
+        <div class="cell footer-cell-title"><p class="cell-text">Настройки</p></div>
+        <div class="cell footer-cell-title"><p class="cell-text">Далее</p></div>
+    </footer>
 
 </body>
