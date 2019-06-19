@@ -1,10 +1,15 @@
 import datetime
 import json
+import random
+import string
 import traceback
 
+from django.db import transaction
+
+from app.models import Game, Category, Question
 from app.services.error_service import AppException, FIELD_REQUIRED, INTERNAL_SERVER_ERROR
 from app.services.json_service import json_response
-from jeopardy.settings import DEBUG, AUTH_TOKEN_HEADER_NAME
+from jeopardy.settings import AUTH_TOKEN_HEADER_NAME
 
 
 def parse_json(json_string):
@@ -67,4 +72,53 @@ class app_view(object):
             return json_response(
                 exception.to_dict(),
                 status=exception.http_code
+            )
+
+
+def init_debug_data():
+    with transaction.atomic():
+        while True:
+            token = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
+            if Game.objects.filter(token=token, expired__gte=datetime.datetime.now()).count() == 0:
+                break
+
+        game = Game.objects.create(token=token)
+        print(token)
+
+        for i in range(0, 6):
+            category = Category.objects.create(name='Имя ' + str(i), game_round1=game)
+            for j in range(1, 6):
+                Question.objects.create(
+                    text='text ' + str(i) + ' ' + str(j),
+                    value=100 * j,
+                    answer='answer ' + str(i) + ' ' + str(j),
+                    comment='',
+                    is_question_end_required=False,
+                    type=Question.TYPE_STANDARD,
+                    category=category
+                )
+
+        for i in range(0, 6):
+            category = Category.objects.create(name='Имя ' + str(i), game_round2=game)
+            for j in range(1, 6):
+                Question.objects.create(
+                    text='text ' + str(i) + ' ' + str(j),
+                    value=100 * j,
+                    answer='answer ' + str(i) + ' ' + str(j),
+                    comment='',
+                    is_question_end_required=False,
+                    type=Question.TYPE_STANDARD,
+                    category=category
+                )
+
+        for i in range(0, 6):
+            category = Category.objects.create(name='Имя ' + str(i), game_final=game)
+            Question.objects.create(
+                text='text ' + str(i) + ' ' + 'f',
+                answer='answer ' + str(i) + ' ' + 'f',
+                value=0,
+                comment='',
+                is_question_end_required=False,
+                type=Question.TYPE_STANDARD,
+                category=category
             )

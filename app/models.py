@@ -38,7 +38,7 @@ class Game(models.Model):
     @staticmethod
     def get_by_token_or_rise(token: str):
         try:
-            return Game.objects.get(token=token, expired__lte=datetime.datetime.now())
+            return Game.objects.get(token=token, expired__gte=datetime.datetime.now())
         except ObjectDoesNotExist:
             raise AppException(BAD_GAME_TOKEN)
 

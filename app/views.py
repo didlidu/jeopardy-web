@@ -1,4 +1,6 @@
 import datetime
+import random
+import string
 
 from django.db import transaction
 from django.shortcuts import render
@@ -14,6 +16,10 @@ from app.utils import app_view
 
 def get_player_panel(request):
     return render(request, "player_panel.html", {})
+
+
+def get_admin_view_panel(request):
+    return render(request, "admin_view_panel.html", {})
 
 
 def get_admin_panel(request):
@@ -58,6 +64,19 @@ def handle_button_click(request):
     return json_response({
         'is_won': is_won,
         'game': GameEntity(game, is_full=False)
+    })
+
+
+@csrf_exempt
+@app_view
+def create_game(request):
+    while True:
+        token = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
+        if Game.objects.filter(token=token, expired__gte=datetime.datetime.now()).count() == 0:
+            break
+    game = Game.objects.create(token=token)
+    return json_response({
+        'game': GameEntity(game, is_full=True)
     })
 
 
