@@ -3,7 +3,7 @@
 <html>
     <head>
         <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
-        <link rel="stylesheet" type="text/css" href="{% static 'css/player.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/admin.css' %}">
         <script>
             var csrf_token = "{{ csrf_token }}";
         </script>
@@ -11,29 +11,95 @@
 <body>
 
     <header>
-
+        <div id="auth_holder" class="auth-holder" style="margin-left: 250px;">
+            <input class="text-input input inline" style="margin-right: 10px;" placeholder="Код игры">
+            <a id="auth_button" class="text button inline">ВХОД</a>
+        </div>
+        <div id="logout_holder" class="auth-holder" style="float: right; margin-right: 300px;">
+            <a id="logout_button" class="text button inline">ВЫХОД</a>
+        </div>
     </header>
-
-    <section>
-        <div class="wrapper">
-            <div class="column1">
-                <div id="button_holder" class="big-red-button-holder" style="display:none">
-                    <a class="big-red-button"></a>
-                </div>
-                <div id="auth_holder" class="auth-holder">
-                    <input class="auth-input" placeholder="Код игры" required>
-                    <a class="auth-button">ВХОД</a>
-                    <p class="text-name">или</p>
-                    <a class="auth-button">СОЗДАТЬ НОВУЮ ИГРУ</a>
-                </div>
+    <nav></nav>
+    <main>
+        <div id="table" class="content">
+            <div class="table-row">
+                <div class="text cell cell-title">Заголовок</div>
+                <div class="text-price cell cell-price">100</div>
+                <div class="text-price cell cell-price">200</div>
+                <div class="text-price cell cell-price">300</div>
+                <div class="text-price cell cell-price">400</div>
+                <div class="text-price cell cell-price">500</div>
             </div>
-            <div class="column2">
-                <div class="user-info-holder" style="display:none">
-                    <p class="text-name">Имя</p>
-                    <p class="text-balance">3000</p>
-                </div>
+            <div class="table-row">
+                <div class="text cell cell-title">Заголовок</div>
+                <div class="text-price cell cell-price">100</div>
+                <div class="text-price cell cell-price">200</div>
+                <div class="text-price cell cell-price">300</div>
+                <div class="text-price cell cell-price">400</div>
+                <div class="text-price cell cell-price">500</div>
+            </div>
+            <div class="table-row">
+                <div class="text cell cell-title">Заголовок</div>
+                <div class="text-price cell cell-price">100</div>
+                <div class="text-price cell cell-price">200</div>
+                <div class="text-price cell cell-price">300</div>
+                <div class="text-price cell cell-price">400</div>
+                <div class="text-price cell cell-price">500</div>
+            </div>
+            <div class="table-row">
+                <div class="text cell cell-title">Заголовок</div>
+                <div class="text-price cell cell-price">100</div>
+                <div class="text-price cell cell-price">200</div>
+                <div class="text-price cell cell-price">300</div>
+                <div class="text-price cell cell-price">400</div>
+                <div class="text-price cell cell-price">500</div>
+            </div>
+            <div class="table-row">
+                <div class="text cell cell-title">Заголовок</div>
+                <div class="text-price cell cell-price">100</div>
+                <div class="text-price cell cell-price">200</div>
+                <div class="text-price cell cell-price">300</div>
+                <div class="text-price cell cell-price">400</div>
+                <div class="text-price cell cell-price">500</div>
+            </div>
+            <div class="table-row">
+                <div class="text cell cell-title">Заголовок</div>
+                <div class="text-price cell cell-price">100</div>
+                <div class="text-price cell cell-price">200</div>
+                <div class="text-price cell cell-price">300</div>
+                <div class="text-price cell cell-price">400</div>
+                <div class="text-price cell cell-price">500</div>
             </div>
         </div>
-    </section>
+        <div id="error" class="text main-info">Сообщение об ошибке</div>
+        <div id="main_info" class="text main-info">Здесь находится основная информация</div>
+    </main>
+    <aside>
+        <div id="players_edit_holder" class="auth-holder">
+            <div class="text">Игрок 1</div>
+            <input class="text-input input inline" style="margin-bottom: 10px; width: 100%;" placeholder="Баланс">
+            <div class="text">Игрок 2</div>
+            <input class="text-input input inline" style="margin-bottom: 10px; width: 100%;" placeholder="Баланс">
+            <div class="text">Игрок 3</div>
+            <input class="text-input input inline" style="margin-bottom: 10px; width: 100%;" placeholder="Баланс">
+            <a id="players_save_button" class="text button inline" style="width: 100%;">СОХРАНИТЬ</a>
+        </div>
+        <a id="skip_question" class="text button inline" style="position: absolute; left: 20px; right: 20px; bottom: 20px;">ПРОПУСК ВОПРОСА</a>
+    </aside>
+    <footer>
+        <div class="text cell cell-title">УЧАСТНИК1</div>
+        <div class="text cell cell-title">УЧАСТНИК2</div>
+        <div class="text cell cell-title">УЧАСТНИК3</div>
+        <div class="text blocked-cell cell-title">
+            <div>
+                <input class="text-input input inline" style="margin-bottom: 10px; width: 80%;" placeholder="Ставка">
+            </div>
+            <div style="width: 150px;">
+                <div class="text cell cell-title" style="padding: 10px">ВЕРНО</div>
+                <div class="text cell cell-title" style="padding: 10px">НЕВЕРНО</div>
+            </div>
+        </div>
+        <div class="text cell cell-title">Далее</div>
+    </footer>
 
 </body>

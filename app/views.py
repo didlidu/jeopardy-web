@@ -7,6 +7,7 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.db import transaction
 from django.shortcuts import render
+from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
 from app.entities import AuthRequestEntity, GameEntity, ButtonClickRequestEntity, EditStateRequestEntity
@@ -42,7 +43,7 @@ def auth_player(request):
             raise AppException(GAME_ALREADY_STARTED)
         player = Player.objects.create(game=game)
     else:
-        player.last_activity = datetime.datetime.utcnow()
+        player.last_activity = timezone.now()
         player.save()
     return json_response({
         'player_id': player.id,
@@ -58,7 +59,7 @@ def handle_button_click(request):
     is_won = False
     game = Game.objects.select_for_update().get(player.game.id)
     with transaction.atomic():
-        if game.expired < datetime.datetime.utcnow():
+        if game.expired < timezone.now():
             raise AppException(GAME_EXPIRED)
         if game.token != request.token:
             raise AppException(FORBIDDEN)
@@ -81,11 +82,12 @@ def create_game(request):
             break
     data = request.FILES['game.siq']
 
-    path = default_storage.save(os.path.join(token, 'game.siq'), ContentFile(data.read()))
-    file = os.path.join(settings.MEDIA_ROOT, path)
-    unzip_file(file, os.path.join(settings.MEDIA_ROOT, token))
-    game = Game.objects.create(token=token)
-    parse_xml(os.path.join(settings.MEDIA_ROOT, token, 'content.xml'), game)
+    with transaction.atomic():
+        path = default_storage.save(os.path.join(token, 'game.siq'), ContentFile(data.read()))
+        file = os.path.join(settings.MEDIA_ROOT, path)
+        unzip_file(file, os.path.join(settings.MEDIA_ROOT, token))
+        game = Game.objects.create(token=token)
+        parse_xml(os.path.join(settings.MEDIA_ROOT, token, 'content.xml'), game)
 
     return json_response({
         'game': GameEntity(game, is_full=True)

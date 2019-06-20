@@ -2,8 +2,13 @@ import datetime
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
+from django.utils import timezone
 
 from app.services.error_service import AppException, BAD_GAME_TOKEN, BAD_OBJECT_ID
+
+
+def now_plus_12_hours():
+    return timezone.now() + datetime.timedelta(hours=12)
 
 
 class Game(models.Model):
@@ -28,8 +33,8 @@ class Game(models.Model):
     )
 
     token = models.CharField(max_length=25, unique=True)
-    created = models.DateTimeField(default=datetime.datetime.utcnow(), blank=True)
-    expired = models.DateTimeField(default=datetime.datetime.utcnow() + datetime.timedelta(hours=12), blank=True)
+    created = models.DateTimeField(default=timezone.now, blank=True)
+    expired = models.DateTimeField(default=now_plus_12_hours, blank=True)
     question = models.ForeignKey('Question', on_delete=models.SET_NULL, blank=True, null=True, related_name='+')
     round = models.IntegerField(default=1, blank=True)  # 1, 2 or 3 for rounds; 4 for final round
     last_round = models.IntegerField(default=1, blank=True)
@@ -45,12 +50,12 @@ class Game(models.Model):
             raise AppException(BAD_GAME_TOKEN)
 
     def get_current_categories(self):
-        return self.categories.filter(round=round)
+        return self.categories.filter(round=self.round)
 
 
 class Player(models.Model):
-    created = models.DateTimeField(default=datetime.datetime.utcnow(), blank=True)
-    last_activity = models.DateTimeField(default=datetime.datetime.utcnow(), blank=True)
+    created = models.DateTimeField(default=timezone.now, blank=True)
+    last_activity = models.DateTimeField(default=timezone.now, blank=True)
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='players')
     balance = models.IntegerField(default=0, blank=True)
 
@@ -89,7 +94,7 @@ class Question(models.Model):
         (TYPE_BAG_CAT, 'BagCat'),
     )
 
-    custom_theme = models.CharField(max_length=255)
+    custom_theme = models.CharField(max_length=255, null=True)
     text = models.TextField(null=True)
     image = models.CharField(max_length=255, null=True)
     audio = models.CharField(max_length=255, null=True)

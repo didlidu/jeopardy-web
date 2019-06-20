@@ -5,6 +5,7 @@ import string
 import traceback
 
 from django.db import transaction
+from django.utils import timezone
 
 from app.models import Game, Category, Question
 from app.services.error_service import AppException, FIELD_REQUIRED, INTERNAL_SERVER_ERROR
@@ -60,14 +61,14 @@ class app_view(object):
             return result
         except AppException as exception:
             exception_dict = exception.to_dict()
-            print(str(datetime.datetime.utcnow()) + ' ' + str(exception_dict))
+            print(str(timezone.now()) + ' ' + str(exception_dict))
             return json_response(
                 exception_dict,
                 status=exception.http_code
             )
         except:
             exception_text = traceback.format_exc()
-            print(str(datetime.datetime.utcnow()) + ' ' + str(exception_text))
+            print(str(timezone.now()) + ' ' + str(exception_text))
             exception = AppException(INTERNAL_SERVER_ERROR)
             return json_response(
                 exception.to_dict(),
