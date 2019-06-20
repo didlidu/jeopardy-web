@@ -86,7 +86,7 @@ def init_debug_data():
         print(token)
 
         for i in range(0, 6):
-            category = Category.objects.create(name='Имя ' + str(i), game_round1=game)
+            category = Category.objects.create(name='Имя ' + str(i), round=1, game=game)
             for j in range(1, 6):
                 Question.objects.create(
                     text='text ' + str(i) + ' ' + str(j),
@@ -99,7 +99,7 @@ def init_debug_data():
                 )
 
         for i in range(0, 6):
-            category = Category.objects.create(name='Имя ' + str(i), game_round2=game)
+            category = Category.objects.create(name='Имя ' + str(i), round=2, game=game)
             for j in range(1, 6):
                 Question.objects.create(
                     text='text ' + str(i) + ' ' + str(j),
@@ -112,7 +112,7 @@ def init_debug_data():
                 )
 
         for i in range(0, 6):
-            category = Category.objects.create(name='Имя ' + str(i), game_final=game)
+            category = Category.objects.create(name='Имя ' + str(i), round=3, game=game)
             Question.objects.create(
                 text='text ' + str(i) + ' ' + 'f',
                 answer='answer ' + str(i) + ' ' + 'f',

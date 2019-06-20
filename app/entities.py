@@ -41,8 +41,11 @@ class PlayerEntity:
 
 class QuestionEntity:
     id = 0
+    custom_theme = None
     text = None
     image = None
+    audio = None
+    video = None
     value = 0
     answer = ''
     comment = ''
@@ -52,8 +55,11 @@ class QuestionEntity:
 
     def __init__(self, question):
         self.id = question.id
+        self.custom_theme = question.custom_theme
         self.text = question.text
         self.image = question.image
+        self.audio = question.audio
+        self.video = question.video
         self.value = question.value
         self.answer = question.answer
         self.comment = question.comment
@@ -79,6 +85,8 @@ class GameEntity:
     created = None
     expired = None
     round = 0
+    last_round = 0
+    final_round = 0
     state = ''
     button_won_by_player_id = 0
     question = None
@@ -91,6 +99,8 @@ class GameEntity:
         self.created = game.created
         self.expired = game.expired
         self.round = game.round
+        self.last_round = game.last_round
+        self.final_round = game.final_round
         self.state = game.state
         self.button_won_by_player_id = game.button_won_by.id if game.button_won_by is not None else 0
         self.question = QuestionEntity(game.question) if game.question is not None else None

@@ -32,6 +32,8 @@ class Game(models.Model):
     expired = models.DateTimeField(default=datetime.datetime.utcnow() + datetime.timedelta(hours=12), blank=True)
     question = models.ForeignKey('Question', on_delete=models.SET_NULL, blank=True, null=True, related_name='+')
     round = models.IntegerField(default=1, blank=True)  # 1, 2 or 3 for rounds; 4 for final round
+    last_round = models.IntegerField(default=1, blank=True)
+    final_round = models.IntegerField(default=0, blank=True)  # 0 for no final
     state = models.CharField(max_length=25, choices=CHOICES_STATE, default=STATE_NO_DATA, blank=True)
     button_won_by = models.ForeignKey('Player', on_delete=models.SET_NULL, blank=True, null=True, related_name='+')
 
@@ -43,16 +45,7 @@ class Game(models.Model):
             raise AppException(BAD_GAME_TOKEN)
 
     def get_current_categories(self):
-        categories = Category.objects.none()
-        if self.round == 1:
-            categories = self.categories_round1.all()
-        elif self.round == 2:
-            categories = self.categories_round2.all()
-        elif self.round == 3:
-            categories = self.categories_round3.all()
-        elif self.round == 4:
-            categories = self.categories_final.all()
-        return categories
+        return self.categories.filter(round=round)
 
 
 class Player(models.Model):
@@ -80,40 +73,27 @@ class Player(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=255)
-    game_round1 = models.ForeignKey(
-        Game, on_delete=models.CASCADE, blank=True, null=True, related_name='categories_round1')
-    game_round2 = models.ForeignKey(
-        Game, on_delete=models.CASCADE, blank=True, null=True, related_name='categories_round2')
-    game_round3 = models.ForeignKey(
-        Game, on_delete=models.CASCADE, blank=True, null=True, related_name='categories_round3')
-    game_final = models.ForeignKey(
-        Game, on_delete=models.CASCADE, blank=True, null=True, related_name='categories_final')
-
-    def get_game(self):
-        if self.game_round1 is not None:
-            return self.game_round1
-        elif self.game_round2 is not None:
-            return self.game_round2
-        elif self.game_round3 is not None:
-            return self.game_round3
-        elif self.game_final is not None:
-            return self.game_final
-        return None
+    round = models.IntegerField()
+    game = models.ForeignKey(
+        Game, on_delete=models.CASCADE, blank=True, null=True, related_name='categories')
 
 
 class Question(models.Model):
     TYPE_STANDARD = 'standard'
     TYPE_AUCTION = 'auction'
-    TYPE_CAT = 'cat'
+    TYPE_BAG_CAT = 'bagcat'
 
     CHOICES_TYPE = (
         (TYPE_STANDARD, 'Standard'),
         (TYPE_AUCTION, 'Auction'),
-        (TYPE_CAT, 'Cat'),
+        (TYPE_BAG_CAT, 'BagCat'),
     )
 
+    custom_theme = models.CharField(max_length=255)
     text = models.TextField(null=True)
     image = models.CharField(max_length=255, null=True)
+    audio = models.CharField(max_length=255, null=True)
+    video = models.CharField(max_length=255, null=True)
     value = models.IntegerField()
     answer = models.CharField(max_length=255)
     comment = models.TextField()

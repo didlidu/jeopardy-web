@@ -1,17 +1,22 @@
 import datetime
+import os
 import random
 import string
 
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from django.db import transaction
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
 from app.entities import AuthRequestEntity, GameEntity, ButtonClickRequestEntity, EditStateRequestEntity
+from app.game_parser import unzip_file, parse_xml
 from app.models import Game, Player, Question
 from app.services.error_service import AppException, GAME_ALREADY_STARTED, GAME_EXPIRED, FORBIDDEN, NOT_ENOUGH_PLAYERS, \
     NO_DATA, QUESTION_ALREADY_PROCESSED, BUTTON_NOT_WON, UNABLE_TO_SKIP_QUESTION
 from app.services.json_service import json_response
 from app.utils import app_view
+from jeopardy import settings
 
 
 def get_player_panel(request):
@@ -74,7 +79,14 @@ def create_game(request):
         token = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
         if Game.objects.filter(token=token, expired__gte=datetime.datetime.now()).count() == 0:
             break
+    data = request.FILES['game.siq']
+
+    path = default_storage.save(os.path.join(token, 'game.siq'), ContentFile(data.read()))
+    file = os.path.join(settings.MEDIA_ROOT, path)
+    unzip_file(file, os.path.join(settings.MEDIA_ROOT, token))
     game = Game.objects.create(token=token)
+    parse_xml(os.path.join(settings.MEDIA_ROOT, token, 'content.xml'), game)
+
     return json_response({
         'game': GameEntity(game, is_full=True)
     })
@@ -91,15 +103,10 @@ def auth_admin(request):
 
 
 def process_question_end(game):
-    is_questions_left = False
+    questions_count = 0
     for category in game.get_current_categories():
-        for question in category.questions:
-            if not question.is_processed:
-                is_questions_left = True
-                break
-        if is_questions_left:
-            break
-    if is_questions_left:
+        questions_count += category.questions.filter(is_processed=False).count()
+    if questions_count < 3 * game.round:
         game.question = None
         game.state = Game.STATE_QUESTIONS
         game.save()
@@ -132,7 +139,7 @@ def next_state(request):
         game.save()
     elif game.state == Game.STATE_QUESTIONS:
         question = Question.get_by_id_or_rise(request_entity.question_id)
-        if question.category.get_game().id != game.id:
+        if question.category.game.id != game.id:
             raise AppException(FORBIDDEN)
         if question.is_processed:
             raise AppException(QUESTION_ALREADY_PROCESSED)
