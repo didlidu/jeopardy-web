@@ -7,68 +7,74 @@
         <script>
             var csrf_token = "{{ csrf_token }}";
         </script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="{% static 'js/admin.js' %}"></script>
     </head>
 <body>
 
     <header>
         <div id="auth_holder" class="auth-holder" style="margin-left: 250px;">
-            <input class="text-input input inline" style="margin-right: 10px;" placeholder="Код игры">
-            <a id="auth_button" class="text button inline">ВХОД</a>
+            <input id="auth_input" class="text-input input inline" style="margin-right: 10px;" placeholder="Код игры">
+            <a id="auth_button" class="text button button-active inline">ВХОД</a>
         </div>
         <div id="logout_holder" class="auth-holder" style="float: right; margin-right: 300px;">
-            <a id="logout_button" class="text button inline">ВЫХОД</a>
+            <a id="logout_button" class="text button button-active inline">ВЫХОД</a>
         </div>
     </header>
     <nav></nav>
     <main>
+        <div id="create_game" class="create-game-holder text">
+            <input id="create_game_file" name="game.siq" type="file"><br><br>
+            <a id="create_game_button" class="text button button-active">СОЗДАТЬ ИГРУ</a>
+        </div>
         <div id="table" class="content">
             <div class="table-row">
-                <div class="text cell cell-title">Заголовок</div>
-                <div class="text-price cell cell-price">100</div>
-                <div class="text-price cell cell-price">200</div>
-                <div class="text-price cell cell-price">300</div>
-                <div class="text-price cell cell-price">400</div>
-                <div class="text-price cell cell-price">500</div>
+                <div class="text cell cell-title cell-title-active">Заголовок</div>
+                <div class="text-price cell cell-price cell-price-active">100</div>
+                <div class="text-price cell cell-price cell-price-active">200</div>
+                <div class="text-price cell cell-price cell-price-active">300</div>
+                <div class="text-price cell cell-price cell-price-active">400</div>
+                <div class="text-price cell cell-price cell-price-active">500</div>
             </div>
             <div class="table-row">
-                <div class="text cell cell-title">Заголовок</div>
-                <div class="text-price cell cell-price">100</div>
-                <div class="text-price cell cell-price">200</div>
-                <div class="text-price cell cell-price">300</div>
-                <div class="text-price cell cell-price">400</div>
-                <div class="text-price cell cell-price">500</div>
+                <div class="text cell cell-title cell-title-active">Заголовок</div>
+                <div class="text-price cell cell-price cell-price-active">100</div>
+                <div class="text-price cell cell-price cell-price-active">200</div>
+                <div class="text-price cell cell-price cell-price-active">300</div>
+                <div class="text-price cell cell-price cell-price-active">400</div>
+                <div class="text-price cell cell-price cell-price-active">500</div>
             </div>
             <div class="table-row">
-                <div class="text cell cell-title">Заголовок</div>
-                <div class="text-price cell cell-price">100</div>
-                <div class="text-price cell cell-price">200</div>
-                <div class="text-price cell cell-price">300</div>
-                <div class="text-price cell cell-price">400</div>
-                <div class="text-price cell cell-price">500</div>
+                <div class="text cell cell-title cell-title-active">Заголовок</div>
+                <div class="text-price cell cell-price cell-price-active">100</div>
+                <div class="text-price cell cell-price cell-price-active">200</div>
+                <div class="text-price cell cell-price cell-price-active">300</div>
+                <div class="text-price cell cell-price cell-price-active">400</div>
+                <div class="text-price cell cell-price cell-price-active">500</div>
             </div>
             <div class="table-row">
-                <div class="text cell cell-title">Заголовок</div>
-                <div class="text-price cell cell-price">100</div>
-                <div class="text-price cell cell-price">200</div>
-                <div class="text-price cell cell-price">300</div>
-                <div class="text-price cell cell-price">400</div>
-                <div class="text-price cell cell-price">500</div>
+                <div class="text cell cell-title cell-title-active">Заголовок</div>
+                <div class="text-price cell cell-price cell-price-active">100</div>
+                <div class="text-price cell cell-price cell-price-active">200</div>
+                <div class="text-price cell cell-price cell-price-active">300</div>
+                <div class="text-price cell cell-price cell-price-active">400</div>
+                <div class="text-price cell cell-price cell-price-active">500</div>
             </div>
             <div class="table-row">
-                <div class="text cell cell-title">Заголовок</div>
-                <div class="text-price cell cell-price">100</div>
-                <div class="text-price cell cell-price">200</div>
-                <div class="text-price cell cell-price">300</div>
-                <div class="text-price cell cell-price">400</div>
-                <div class="text-price cell cell-price">500</div>
+                <div class="text cell cell-title cell-title-active">Заголовок</div>
+                <div class="text-price cell cell-price cell-price-active">100</div>
+                <div class="text-price cell cell-price cell-price-active">200</div>
+                <div class="text-price cell cell-price cell-price-active">300</div>
+                <div class="text-price cell cell-price cell-price-active">400</div>
+                <div class="text-price cell cell-price cell-price-active">500</div>
             </div>
             <div class="table-row">
-                <div class="text cell cell-title">Заголовок</div>
-                <div class="text-price cell cell-price">100</div>
-                <div class="text-price cell cell-price">200</div>
-                <div class="text-price cell cell-price">300</div>
-                <div class="text-price cell cell-price">400</div>
-                <div class="text-price cell cell-price">500</div>
+                <div class="text cell cell-title cell-title-active">Заголовок</div>
+                <div class="text-price cell cell-price cell-price-active">100</div>
+                <div class="text-price cell cell-price cell-price-active">200</div>
+                <div class="text-price cell cell-price cell-price-active">300</div>
+                <div class="text-price cell cell-price cell-price-active">400</div>
+                <div class="text-price cell cell-price cell-price-active">500</div>
             </div>
         </div>
         <div id="error" class="text main-info">Сообщение об ошибке</div>
@@ -82,24 +88,26 @@
             <input class="text-input input inline" style="margin-bottom: 10px; width: 100%;" placeholder="Баланс">
             <div class="text">Игрок 3</div>
             <input class="text-input input inline" style="margin-bottom: 10px; width: 100%;" placeholder="Баланс">
-            <a id="players_save_button" class="text button inline" style="width: 100%;">СОХРАНИТЬ</a>
+            <a id="players_save_button" class="text button button-active inline" style="width: 100%;">СОХРАНИТЬ</a>
         </div>
-        <a id="skip_question" class="text button inline" style="position: absolute; left: 20px; right: 20px; bottom: 20px;">ПРОПУСК ВОПРОСА</a>
+        <a id="skip_question" class="text button button-active inline"
+           style="position: absolute; left: 20px; right: 20px; bottom: 20px;">ПРОПУСК ВОПРОСА</a>
     </aside>
     <footer>
-        <div class="text cell cell-title">УЧАСТНИК1</div>
-        <div class="text cell cell-title">УЧАСТНИК2</div>
-        <div class="text cell cell-title">УЧАСТНИК3</div>
-        <div class="text blocked-cell cell-title">
+        <div id="player1" class="text cell cell-title cell-title-active">УЧАСТНИК1</div>
+        <div id="player2" class="text cell cell-title cell-title-active">УЧАСТНИК2</div>
+        <div id="player3" class="text cell cell-title cell-title-active">УЧАСТНИК3</div>
+        <div class="text cell disabled-cell-title">
             <div>
-                <input class="text-input input inline" style="margin-bottom: 10px; width: 80%;" placeholder="Ставка">
+                <input id="bet_input" class="text-input input inline"
+                       style="margin-bottom: 10px; width: 80%;" placeholder="Ставка">
             </div>
             <div style="width: 150px;">
-                <div class="text cell cell-title" style="padding: 10px">ВЕРНО</div>
-                <div class="text cell cell-title" style="padding: 10px">НЕВЕРНО</div>
+                <div id="answer_correct" class="text cell cell-title cell-title-active" style="padding: 10px">ВЕРНО</div>
+                <div id="answer_wrong" class="text cell cell-title cell-title-active" style="padding: 10px">НЕВЕРНО</div>
             </div>
         </div>
-        <div class="text cell cell-title">Далее</div>
+        <div id="next" class="text cell cell-title">Далее</div>
     </footer>
 
 </body>
