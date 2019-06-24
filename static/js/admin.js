@@ -47,17 +47,20 @@ $(document).ready(function() {
             return;
         }
         var data = new FormData();
-        data.append("game.siq", fileInput[0]);
+        data.append("game.siq", fileInput[0].files[0]);
         $.ajax({
             url: "/api/admin/create-game",
-            type: "POST",
-            data: "game.siq=" + fileInput.val(),
+            method: "POST",
+            data: data,
+            cache: false,
+            contentType: false,
+            processData: false,
             success: function(result) {
                 isInited = true;
                 game = result['game'];
             },
             error: function(data){
-                alert('Sorry.');
+                $("#error").html(data.responseJSON.description);
             }
         });
     });
