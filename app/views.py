@@ -39,9 +39,9 @@ def auth_player(request):
     game = Game.get_by_token_or_rise(request_entity.token)
     player = Player.get_by_game_and_name(game, request_entity.name)
     if player is None:
-        if game.state not in (Game.STATE_NO_DATA, Game.STATE_WAITING_FOR_PLAYERS) or game.players.count() >= 3:
+        if game.state != Game.STATE_WAITING_FOR_PLAYERS or game.players.count() >= 3:
             raise AppException(GAME_ALREADY_STARTED)
-        player = Player.objects.create(game=game)
+        player = Player.objects.create(name=request_entity.name, game=game)
     else:
         player.last_activity = timezone.now()
         player.save()
@@ -125,9 +125,7 @@ def process_question_end(game):
 def next_state(request):
     request_entity = EditStateRequestEntity(request.body)
     game = Game.get_by_token_or_rise(request.token)
-    if game.state == Game.STATE_NO_DATA:
-        raise AppException(NO_DATA)
-    elif game.state == Game.STATE_WAITING_FOR_PLAYERS:
+    if game.state == Game.STATE_WAITING_FOR_PLAYERS:
         if game.players.count() >= 3:
             game.state = Game.STATE_THEMES_ALL
             game.save()

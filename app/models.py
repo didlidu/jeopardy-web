@@ -12,7 +12,6 @@ def now_plus_12_hours():
 
 
 class Game(models.Model):
-    STATE_NO_DATA = 'no_data'
     STATE_WAITING_FOR_PLAYERS = 'waiting_for_players'
     STATE_THEMES_ALL = 'themes_all'
     STATE_THEMES_ROUND = 'themes_round'
@@ -22,7 +21,6 @@ class Game(models.Model):
     STATE_QUESTION_END = 'question_end'
 
     CHOICES_STATE = (
-        (STATE_NO_DATA, 'NoData'),
         (STATE_WAITING_FOR_PLAYERS, 'WaitingForPlayers'),
         (STATE_THEMES_ALL, 'ThemesAll'),
         (STATE_THEMES_ROUND, 'ThemesRound'),
@@ -39,7 +37,7 @@ class Game(models.Model):
     round = models.IntegerField(default=1, blank=True)  # 1, 2 or 3 for rounds; 4 for final round
     last_round = models.IntegerField(default=1, blank=True)
     final_round = models.IntegerField(default=0, blank=True)  # 0 for no final
-    state = models.CharField(max_length=25, choices=CHOICES_STATE, default=STATE_NO_DATA, blank=True)
+    state = models.CharField(max_length=25, choices=CHOICES_STATE, default=STATE_WAITING_FOR_PLAYERS, blank=True)
     button_won_by = models.ForeignKey('Player', on_delete=models.SET_NULL, blank=True, null=True, related_name='+')
 
     @staticmethod
@@ -56,6 +54,7 @@ class Game(models.Model):
 class Player(models.Model):
     created = models.DateTimeField(default=timezone.now, blank=True)
     last_activity = models.DateTimeField(default=timezone.now, blank=True)
+    name = models.CharField(max_length=255)
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='players')
     balance = models.IntegerField(default=0, blank=True)
 

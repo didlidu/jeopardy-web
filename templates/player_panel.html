@@ -3,10 +3,10 @@
 <html>
     <head>
         <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/snackbar.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/player.css' %}">
-        <script>
-            var csrf_token = "{{ csrf_token }}";
-        </script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="{% static 'js/player.js' %}"></script>
     </head>
 <body>
 
@@ -17,13 +17,13 @@
     <section>
         <div class="wrapper">
             <div class="column1">
-                <div id="button_holder" class="big-red-button-holder" style="display:none">
-                    <a class="big-red-button"></a>
+                <div id="button_holder" class="big-red-button-holder">
+                    <a class="big-red-button big-red-button-active"></a>
                 </div>
                 <div id="auth_holder" class="auth-holder">
-                    <input class="auth-input" placeholder="Имя" required>
-                    <input class="auth-input" placeholder="Код игры" required>
-                    <a class="auth-button">ВХОД</a>
+                    <input id="name_input" class="input" placeholder="Имя">
+                    <input id="token_input" class="input" placeholder="Код игры">
+                    <a id="auth_button" class="text button button-active">ВХОД</a>
                 </div>
             </div>
             <div class="column2">
@@ -34,5 +34,7 @@
             </div>
         </div>
     </section>
+
+    <div id="snackbar">Some text some message..</div>
 
 </body>

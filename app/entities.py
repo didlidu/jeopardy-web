@@ -30,11 +30,13 @@ class EditStateRequestEntity(BaseRequestEntity):
 
 class PlayerEntity:
     id = 0
+    name = ''
     last_activity = None
     balance = 0
 
     def __init__(self, player):
         self.id = player.id
+        self.name = player.name
         self.last_activity = player.last_activity
         self.balance = player.balance
 
