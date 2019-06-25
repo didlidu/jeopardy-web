@@ -6,12 +6,13 @@
         <link rel="stylesheet" type="text/css" href="{% static 'css/snackbar.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/player.css' %}">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="{% static 'js/main.js' %}"></script>
         <script src="{% static 'js/player.js' %}"></script>
     </head>
 <body>
 
     <header>
-
+        <a id="exit_button" class="exit-button text button button-active">ВЫХОД</a>
     </header>
 
     <section>
@@ -28,8 +29,8 @@
             </div>
             <div class="column2">
                 <div class="user-info-holder" style="display:none">
-                    <p class="text-name">Имя</p>
-                    <p class="text-balance">3000</p>
+                    <p id="name" class="text-name">Имя</p>
+                    <p id="balance" class="text-balance">3000</p>
                 </div>
             </div>
         </div>

@@ -168,3 +168,7 @@ section {
     box-shadow: 0 0 2px rgba(0, 0, 0, 0.30);
 }
 
+.exit-button {
+    position: fixed;
+    margin: 8px 0 8px 30px;
+}

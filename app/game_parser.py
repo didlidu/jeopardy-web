@@ -1,14 +1,30 @@
 import os
+import shutil
+from urllib.parse import unquote
 from xml.etree import ElementTree
 import zipfile
 
 from app.models import Category, Question
 
 
+def unpack_zipfile(filename, extract_dir, encoding='cp437'):
+    with zipfile.ZipFile(filename) as archive:
+        for entry in archive.infolist():
+            name = unquote(entry.filename)
+
+            # don't extract absolute paths or ones with .. in them
+            if name.startswith('/') or '..' in name:
+                continue
+
+            target = os.path.join(extract_dir, *name.split('/'))
+            os.makedirs(os.path.dirname(target), exist_ok=True)
+            if not entry.is_dir():  # file
+                with archive.open(entry) as source, open(target, 'wb') as dest:
+                    shutil.copyfileobj(source, dest)
+
+
 def unzip_file(filename, extracting_dir_name):
-    zip_ref = zipfile.ZipFile(filename, 'r')
-    zip_ref.extractall(extracting_dir_name)
-    zip_ref.close()
+    unpack_zipfile(filename, extracting_dir_name, encoding='cp437')
 
 
 def parse_xml(filename, game):
@@ -17,10 +33,6 @@ def parse_xml(filename, game):
 
     namespace = root.tag.replace('}package', '}')
     print('Namespace:', namespace)
-
-    for child in root:
-        print(child.tag)
-    print(namespace + 'rounds')
 
     last_round = 0
 

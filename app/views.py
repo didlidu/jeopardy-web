@@ -78,7 +78,7 @@ def handle_button_click(request):
 def create_game(request):
     while True:
         token = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
-        if Game.objects.filter(token=token, expired__gte=datetime.datetime.now()).count() == 0:
+        if Game.objects.filter(token=token, expired__gte=datetime.datetime.utcnow()).count() == 0:
             break
     data = request.FILES['game.siq']
 

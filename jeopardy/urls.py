@@ -15,5 +15,5 @@ urlpatterns = [
     path('api/admin/next-state', views.next_state),
     path('api/admin/skip-question', views.skip_question),
 
-    path('api/game', views.get_game)
+    path('api/game', views.get_game),
 ]

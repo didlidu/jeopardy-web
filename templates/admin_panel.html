@@ -5,13 +5,14 @@
         <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/admin.css' %}">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="{% static 'js/main.js' %}"></script>
         <script src="{% static 'js/admin.js' %}"></script>
     </head>
 <body>
 
     <header>
         <div id="auth_holder" class="auth-holder" style="margin-left: 250px;">
-            <input id="auth_input" class="text-input input inline" style="margin-right: 10px;" placeholder="Код игры">
+            <input id="token_input" class="text-input input inline" style="margin-right: 10px;" placeholder="Код игры">
             <a id="auth_button" class="text button button-active inline">ВХОД</a>
         </div>
         <div id="logout_holder" class="auth-holder" style="float: right; margin-right: 300px;">
@@ -91,9 +92,9 @@
            style="position: absolute; left: 20px; right: 20px; bottom: 20px;">ПРОПУСК ВОПРОСА</a>
     </aside>
     <footer>
-        <div id="player1" class="text cell cell-title cell-title-active">УЧАСТНИК1</div>
-        <div id="player2" class="text cell cell-title cell-title-active">УЧАСТНИК2</div>
-        <div id="player3" class="text cell cell-title cell-title-active">УЧАСТНИК3</div>
+        <div id="player1" class="text cell cell-title cell-title-active" style="white-space: pre-line;">УЧАСТНИК1</div>
+        <div id="player2" class="text cell cell-title cell-title-active" style="white-space: pre-line;">УЧАСТНИК2</div>
+        <div id="player3" class="text cell cell-title cell-title-active" style="white-space: pre-line;">УЧАСТНИК3</div>
         <div class="text cell disabled-cell-title">
             <div>
                 <input id="bet_input" class="text-input input inline"

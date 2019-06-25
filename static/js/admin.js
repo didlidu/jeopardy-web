@@ -11,16 +11,20 @@ var STATE_QUESTION_END = 'question_end';
 var game = null;
 var prevState = STATE_NONE;
 
+function showError(text) {
+    $("#error").html(text);
+}
+
 function handleApiError(data) {
     if ("responseJSON" in data) {
-        $("#error").html(data.responseJSON.description);
+        showError(data.responseJSON.description);
     } else {
-        $("#error").html("Проверьте интернет-соединение");
+        showError("Проверьте интернет-соединение");
     }
 }
 
 function clearApiErrors() {
-    $("#error").html("&nbsp");
+    showError("&nbsp");
 }
 
 
@@ -108,13 +112,16 @@ function onGameChanged() {
     toDefaultState();
     prevState = game.state;
     bindPlayers();
-    if (game.state == STATE_THEMES_ALL) {
+    if (game.state == STATE_WAITING_FOR_PLAYERS) {
         if (game.players.length == 3) {
             $("#main_info").html("Игра готова");
             $("#next").css('visibility', 'visible');
         } else {
             $("#main_info").html("Ожидание игроков");
         }
+    }
+    if (game.state == STATE_THEMES_ALL) {
+        $("#next").css('visibility', 'visible');
     }
     if (game.state == STATE_THEMES_ROUND) {
         bindTableData();
@@ -127,11 +134,40 @@ function onGameChanged() {
 
 }
 
+function getGame() {
+    if (!getCookie("admin_token")) return;
+    $.ajax({
+            url: "/api/game",
+            headers: {
+                'Authorization': getCookie("admin_token"),
+            },
+            method: "GET",
+            data: {
+                is_full: true
+            },
+            success: function(result) {
+                game = result['game'];
+                onGameChanged();
+            },
+            error: function(data) {
+                if ("responseJSON" in data) {
+                    showError(data.responseJSON.description);
+                    if (data.responseJSON.code == 101) {
+                        setCookie("admin_token", "", 10);
+                        game = null;
+                        toDefaultState();
+                    }
+                }
+            }
+        });
+}
+
 $(document).ready(function() {
-    $( "#create_game_button" ).on( "click", function( event ) {
+
+    $("#create_game_button").on("click", function(event) {
         var fileInput = $('#create_game_file');
         if (!fileInput.val()) {
-            $("#error").html("Выберите файл для загрузки");
+            showError("Выберите файл для загрузки");
             return;
         }
         var data = new FormData();
@@ -148,6 +184,8 @@ $(document).ready(function() {
                 setViewEnabled(true);
                 clearApiErrors();
                 game = result['game'];
+                setCookie("admin_token", game.token, 10);
+                onGameChanged();
             },
             error: function(data) {
                 handleApiError(data);
@@ -155,6 +193,43 @@ $(document).ready(function() {
             }
         });
     });
+
+    $("#auth_button").on("click", function(event) {
+        var token = $('#token_input').val().trim();
+        if (!token) {
+            showError("Введите код игры");
+            return;
+        }
+        setViewEnabled(false);
+        $.ajax({
+            url: "/api/admin/auth",
+            method: "POST",
+            data: JSON.stringify({
+                token: token
+            }),
+            success: function(result) {
+                setViewEnabled(true);
+                game = result['game'];
+                setCookie("admin_token", game.token, 10);
+                onGameChanged();
+            },
+            error: function(data) {
+                handleApiError(data);
+                setViewEnabled(true);
+            }
+        });
+    });
+
+    $("#logout_button").on("click", function(event) {
+        game = null;
+        prevState = STATE_NONE;
+        setCookie("admin_token", "", 10);
+        toDefaultState();
+    });
+
     toDefaultState();
     setViewEnabled(true);
+    setInterval(function() {
+        getGame();
+    }, 1000);
 });
