@@ -154,6 +154,7 @@ function getGame() {
                     showError(data.responseJSON.description);
                     if (data.responseJSON.code == 101) {
                         setCookie("admin_token", "", 10);
+                        prevState = STATE_NONE;
                         game = null;
                         toDefaultState();
                     }
