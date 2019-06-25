@@ -89,6 +89,10 @@ footer {
     justify-content: center;
 }
 
+.cell-clicked {
+    box-sizing: border-box;
+    border: 3px solid yellow;
+}
 
 .disabled-cell-title {
     flex: 4;

@@ -96,6 +96,7 @@ class GameEntity:
     categories = []
 
     def __init__(self, game, is_full=False):
+        from app.models import Game
         self.id = game.id
         self.token = game.token
         self.created = game.created
@@ -108,4 +109,7 @@ class GameEntity:
         self.question = QuestionEntity(game.question) if game.question is not None else None
         self.players = [PlayerEntity(player) for player in game.players.all()]
         if is_full:
-            self.categories = [CategoryEntity(category) for category in game.get_current_categories()]
+            if game.state == Game.STATE_THEMES_ALL:
+                self.categories = [CategoryEntity(category) for category in game.get_all_categories()]
+            else:
+                self.categories = [CategoryEntity(category) for category in game.get_current_categories()]

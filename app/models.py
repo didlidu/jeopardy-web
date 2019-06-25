@@ -50,6 +50,9 @@ class Game(models.Model):
     def get_current_categories(self):
         return self.categories.filter(round=self.round)
 
+    def get_all_categories(self):
+        return self.categories.all()
+
 
 class Player(models.Model):
     created = models.DateTimeField(default=datetime.datetime.utcnow, blank=True)

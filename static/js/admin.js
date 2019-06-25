@@ -11,6 +11,8 @@ var STATE_QUESTION_END = 'question_end';
 var game = null;
 var prevState = STATE_NONE;
 
+var selectedQuestionId = 0;
+
 function showError(text) {
     $("#error").html(text);
 }
@@ -31,8 +33,6 @@ function clearApiErrors() {
 function setViewEnabled(isEnabled) {
     if (isEnabled) {
         $("a.button").addClass("button-active");
-        $("div.cell-title").addClass("cell-title-active");
-        $("div.cell-price").addClass("cell-price-active");
     } else {
         $("a.button").removeClass("button-active");
         $("div.cell-title").removeClass("cell-title-active");
@@ -42,6 +42,7 @@ function setViewEnabled(isEnabled) {
 
 function toDefaultState() {
     var isInited = game != null;
+    $("#token").html("")
     if (isInited) $("#auth_holder").hide(); else $("#auth_holder").show();
     if (isInited) $("#logout_holder").show(); else $("#logout_holder").hide();
 
@@ -70,9 +71,12 @@ function toDefaultState() {
 function bindPlayers() {
     if (game.players.length == 3) {
         $("#players_edit_holder").show();
-        $("#edit_balance1").value = game.players[0].balance;
-        $("#edit_balance2").value = game.players[1].balance;
-        $("#edit_balance3").value = game.players[2].balance;
+        $("#edit_balance1_name").html(game.players[0].name);
+        $("#edit_balance2_name").html(game.players[1].name);
+        $("#edit_balance3_name").html(game.players[2].name);
+        $("#edit_balance1").val(game.players[0].balance.toString());
+        $("#edit_balance2").val(game.players[1].balance.toString());
+        $("#edit_balance3").val(game.players[2].balance.toString());
     }
     if (game.players.length >= 1) {
         $("#player1").html(game.players[0].name + "\n" + game.players[0].balance.toString());
@@ -85,12 +89,30 @@ function bindPlayers() {
     }
 }
 
-function bindTableData() {
+function onCellClick(categoryIndex, questionIndex) {
+    $("div.cell-clicked").removeClass("cell-clicked");
+    if (game.state != STATE_QUESTIONS) {
+        showError("Выбор вопроса в данный момент невозможен");
+        return;
+    }
+    try {
+        selectedQuestionId = game.categories[categoryIndex].questions[questionIndex].id;
+    } catch (err) {
+        showError("Ошибка при выборе вопроса: вопрос не найден");
+        return;
+    }
+    $("#price" + categoryIndex + questionIndex).addClass("cell-clicked");
+}
+
+function bindTable() {
+    $("div.cell-title").removeClass("cell-title-active");
+    $("div.cell-price").removeClass("cell-price-active");
     for (i = 1; i <= 6; i++) {
         if (i >= game.categories.length) {
-            $("#title" + i).html("-");
+            $("#title" + i).html("");
             for (j = 1; j <= 5; j++) {
-                $("#price" + i + j).html("-");
+                $("#price" + i + j).html("");
+                $("#price" + i + j).on("click", function(event) { });
             }
             continue;
         }
@@ -98,40 +120,18 @@ function bindTableData() {
         $("#title" + i).html(category.name);
         for (j = 1; j <= 5; j++) {
             if (j >= category.questions.length) {
-                $("#price" + i + j).html("-");
+                $("#price" + i + j).html("");
+                $("#price" + i + j).on("click", function(event) { });
                 continue;
             }
             question = category.questions[j];
             $("#price" + i + j).html(question.value);
+            let finalI = i;
+            let finalJ = j;
+            $("#price" + i + j).on("click", function(event) { onCellClick(finalI, finalJ); });
+            $("#price" + i + j).addClass("cell-price-active");
         }
     }
-}
-
-function onGameChanged() {
-    if (prevState == game.state) return;
-    toDefaultState();
-    prevState = game.state;
-    bindPlayers();
-    if (game.state == STATE_WAITING_FOR_PLAYERS) {
-        if (game.players.length == 3) {
-            $("#main_info").html("Игра готова");
-            $("#next").css('visibility', 'visible');
-        } else {
-            $("#main_info").html("Ожидание игроков");
-        }
-    }
-    if (game.state == STATE_THEMES_ALL) {
-        $("#next").css('visibility', 'visible');
-    }
-    if (game.state == STATE_THEMES_ROUND) {
-        bindTableData();
-        $("#next").css('visibility', 'visible');
-    }
-    if (game.state == STATE_QUESTIONS) {
-        bindTableData();
-        $("#next").css('visibility', 'visible');
-    }
-
 }
 
 function getGame() {
@@ -161,6 +161,70 @@ function getGame() {
                 }
             }
         });
+}
+
+function onGameChanged() {
+    if (prevState == game.state && game.state != STATE_WAITING_FOR_PLAYERS) return;
+    toDefaultState();
+    prevState = game.state;
+    bindPlayers();
+    $("#token").html(game.token)
+    if (game.state == STATE_WAITING_FOR_PLAYERS) {
+        $("#table").hide();
+        if (game.players.length == 3) {
+            $("#main_info").html("Игра готова");
+            $("#next").css('visibility', 'visible');
+        } else {
+            $("#main_info").html("Ожидание игроков");
+        }
+    }
+    if (game.state == STATE_THEMES_ALL || game.state == STATE_THEMES_ROUND) {
+        $("#table").hide();
+        var text = game.state == STATE_THEMES_ALL ? "Темы всей игры:\n" : "Темы раунда:\n";
+        game.categories.forEach(function(item, i, categories) {
+            text += item.name + "\n";
+        });
+        $("#main_info").html(text);
+        $("#next").css('visibility', 'visible');
+    }
+    if (game.state == STATE_QUESTIONS) {
+        bindTable();
+        $("#main_info").html("Выберите вопрос");
+        $("#next").css('visibility', 'visible');
+    }
+
+}
+
+function sendNextStateAction(questionId, playerId, balanceDiff) {
+    setViewEnabled(false);
+    $.ajax({
+        url: "/api/admin/next-state",
+        headers: {
+            'Authorization': getCookie("admin_token"),
+        },
+        method: "POST",
+        data: JSON.stringify({
+            question_id: questionId,
+            player_id: playerId,
+            balance_diff: balanceDiff
+        }),
+        success: function(result) {
+            setViewEnabled(true);
+            bindTable();
+            game = result['game'];
+            onGameChanged();
+        },
+        error: function(data) {
+            handleApiError(data);
+            setViewEnabled(true);
+        }
+    });
+}
+
+function onNextClick() {
+    if ([STATE_WAITING_FOR_PLAYERS, STATE_THEMES_ALL, STATE_THEMES_ROUND].includes(game.state)) {
+        sendNextStateAction(0, 0, 0);
+    }
 }
 
 $(document).ready(function() {
@@ -226,6 +290,10 @@ $(document).ready(function() {
         prevState = STATE_NONE;
         setCookie("admin_token", "", 10);
         toDefaultState();
+    });
+
+    $("#next").on("click", function(event) {
+        onNextClick();
     });
 
     toDefaultState();

@@ -11,6 +11,7 @@
 <body>
 
     <header>
+        <div id="token" class="text auth-holder" style="position: absolute; font-size: 30px; margin-left: 50px;"></div>
         <div id="auth_holder" class="auth-holder" style="margin-left: 250px;">
             <input id="token_input" class="text-input input inline" style="margin-right: 10px;" placeholder="Код игры">
             <a id="auth_button" class="text button button-active inline">ВХОД</a>
@@ -80,13 +81,13 @@
     </main>
     <aside>
         <div id="players_edit_holder" class="auth-holder">
-            <div class="text">Игрок 1</div>
+            <div id="edit_balance1_name" class="text">Игрок 1</div>
             <input id="edit_balance1" class="text-input input inline" style="margin-bottom: 10px; width: 100%;" placeholder="Баланс">
-            <div class="text">Игрок 2</div>
+            <div id="edit_balance2_name" class="text">Игрок 2</div>
             <input id="edit_balance2" class="text-input input inline" style="margin-bottom: 10px; width: 100%;" placeholder="Баланс">
-            <div class="text">Игрок 3</div>
+            <div id="edit_balance3_name" class="text">Игрок 3</div>
             <input id="edit_balance3" class="text-input input inline" style="margin-bottom: 10px; width: 100%;" placeholder="Баланс">
-            <a id="players_save_button" class="text button button-active inline" style="width: 100%;">СОХРАНИТЬ</a>
+            <a id="players_save_button" class="text button button-active inline" style="width: 100%;">СОХРАНИТЬ | НЕ РАБОТАЕТ</a>
         </div>
         <a id="skip_question" class="text button button-active inline"
            style="position: absolute; left: 20px; right: 20px; bottom: 20px;">ПРОПУСК ВОПРОСА</a>
