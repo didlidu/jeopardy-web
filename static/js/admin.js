@@ -1,13 +1,4 @@
 
-var STATE_NONE = 'none';
-var STATE_WAITING_FOR_PLAYERS = 'waiting_for_players';
-var STATE_THEMES_ALL = 'themes_all';
-var STATE_THEMES_ROUND = 'themes_round';
-var STATE_QUESTIONS = 'questions';
-var STATE_QUESTION_EVENT = 'question_event';
-var STATE_QUESTION = 'question';
-var STATE_QUESTION_END = 'question_end';
-
 var game = null;
 var prevState = STATE_NONE;
 
@@ -169,6 +160,10 @@ function onGameChanged() {
     prevState = game.state;
     bindPlayers();
     $("#token").html(game.token)
+    if (selectedQuestionId != 0) {
+        $("div.cell-clicked").removeClass("cell-clicked");
+        selectedQuestionId = 0;
+    }
     if (game.state == STATE_WAITING_FOR_PLAYERS) {
         $("#table").hide();
         if (game.players.length == 3) {
@@ -191,6 +186,29 @@ function onGameChanged() {
         bindTable();
         $("#main_info").html("Выберите вопрос");
         $("#next").css('visibility', 'visible');
+    }
+    if (game.state == STATE_QUESTION) {
+        bindTable();
+        if (game.question != null) {
+            let text = ""
+            if (game.question.type == QUESTION_TYPE_AUCTION) text += "Вопрос-аукцион\n";
+            if (game.question.type == QUESTION_TYPE_BAG_CAT) text += "Кот в мешке\n";
+            if (game.question.video) text += "Есть видеофрагмент\n";
+            if (game.question.audio) text += "Есть аудиофрагмент\n";
+            if (game.question.image) text += "Есть изображение\n";
+            if (game.question.custom_theme) text += "Тема: " + game.question.custom_theme + "\n";
+            text += "Цена: " + game.question.value + "\n";
+            text += "Вопрос: " + game.question.text + "\n";
+            text += "Ответ: " + game.question.answer + "\n";
+            if (game.question.comment) text += "Комментарий: " + game.question.comment + "\n";
+            $("#main_info").html(text);
+
+
+            if ([QUESTION_TYPE_AUCTION, QUESTION_TYPE_BAG_CAT] in game.question.type) {
+                $("#bet_input").css('visibility','hidden');
+            }
+        }
+
     }
 
 }

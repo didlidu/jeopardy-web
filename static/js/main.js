@@ -19,3 +19,16 @@ function getCookie(name) {
   }
   return "";
 }
+
+var STATE_NONE = 'none';
+var STATE_WAITING_FOR_PLAYERS = 'waiting_for_players';
+var STATE_THEMES_ALL = 'themes_all';
+var STATE_THEMES_ROUND = 'themes_round';
+var STATE_QUESTIONS = 'questions';
+var STATE_QUESTION_EVENT = 'question_event';
+var STATE_QUESTION = 'question';
+var STATE_QUESTION_END = 'question_end';
+
+var QUESTION_TYPE_STANDARD = 'standard'
+var QUESTION_TYPE_AUCTION = 'auction'
+var QUESTION_TYPE_BAG_CAT = 'bagcat'
