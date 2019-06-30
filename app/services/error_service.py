@@ -18,6 +18,8 @@ NO_DATA = 105
 QUESTION_ALREADY_PROCESSED = 106
 BUTTON_NOT_WON = 107
 UNABLE_TO_SKIP_QUESTION = 108
+BETS_NOT_READY = 109
+NOT_ENOUGH_BALANCE = 110
 
 
 exception_codes_dict = {
@@ -39,6 +41,8 @@ exception_codes_dict = {
     QUESTION_ALREADY_PROCESSED: ('Вопрос уже был разыгран', 403),
     BUTTON_NOT_WON: ('Ни один из игроков не нажал на кнопку', 403),
     UNABLE_TO_SKIP_QUESTION: ('Невозможно пропустить вопрос', 403),
+    BETS_NOT_READY: ('Игроки не сделали ставки', 403),
+    NOT_ENOUGH_BALANCE: ('', 403)
 }
 
 

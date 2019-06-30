@@ -1,8 +1,11 @@
 
 var game = null;
-var prevState = STATE_NONE;
+
+var cur_game_hash = "";
 
 var selectedQuestionId = 0;
+var selectedPlayerId = 0;
+var isAnswerCorrect = null;
 
 function showError(text) {
     $("#error").html(text);
@@ -20,14 +23,13 @@ function clearApiErrors() {
     showError("&nbsp");
 }
 
-
 function setViewEnabled(isEnabled) {
     if (isEnabled) {
         $("a.button").addClass("button-active");
     } else {
         $("a.button").removeClass("button-active");
-        $("div.cell-title").removeClass("cell-title-active");
-        $("div.cell-price").removeClass("cell-price-active");
+        //$("div.cell-title").removeClass("cell-title-active");
+        //$("div.cell-price").removeClass("cell-price-active");
     }
 }
 
@@ -39,6 +41,8 @@ function toDefaultState() {
 
     if (isInited) $("#create_game").hide(); else $("#create_game").show();
     if (isInited) $("#table").show(); else $("#table").hide();
+    $("div.cell-title").removeClass("cell-title-active");
+    $("div.cell-price").removeClass("cell-price-active");
     $("#error").html("&nbsp");
     $("#main_info").html("&nbsp");
 
@@ -54,9 +58,16 @@ function toDefaultState() {
 
     $("#bet_input").css('visibility','hidden');
     $("#answer_correct").css('visibility','hidden');
+    $("#answer_correct").addClass("cell-title-active");
+    $("#answer_correct").removeClass("cell-clicked");
     $("#answer_wrong").css('visibility','hidden');
+    $("#answer_wrong").addClass("cell-title-active");
+    $("#answer_wrong").removeClass("cell-clicked");
 
     $("#next").css('visibility','hidden');
+    $("#next").addClass("cell-title-active");
+
+    $("div.cell-clicked").removeClass("cell-clicked");
 }
 
 function bindPlayers() {
@@ -81,7 +92,6 @@ function bindPlayers() {
 }
 
 function onCellClick(categoryIndex, questionIndex) {
-    $("div.cell-clicked").removeClass("cell-clicked");
     if (game.state != STATE_QUESTIONS) {
         showError("Выбор вопроса в данный момент невозможен");
         return;
@@ -92,16 +102,15 @@ function onCellClick(categoryIndex, questionIndex) {
         showError("Ошибка при выборе вопроса: вопрос не найден");
         return;
     }
+    $("div.cell-clicked").removeClass("cell-clicked");
     $("#price" + categoryIndex + questionIndex).addClass("cell-clicked");
 }
 
 function bindTable() {
-    $("div.cell-title").removeClass("cell-title-active");
-    $("div.cell-price").removeClass("cell-price-active");
-    for (i = 1; i <= 6; i++) {
+    for (i = 0; i < 7; i++) {
         if (i >= game.categories.length) {
             $("#title" + i).html("");
-            for (j = 1; j <= 5; j++) {
+            for (j = 0; j < 5; j++) {
                 $("#price" + i + j).html("");
                 $("#price" + i + j).on("click", function(event) { });
             }
@@ -109,14 +118,26 @@ function bindTable() {
         }
         var category = game.categories[i];
         $("#title" + i).html(category.name);
-        for (j = 1; j <= 5; j++) {
+        for (j = 0; j < 5; j++) {
             if (j >= category.questions.length) {
                 $("#price" + i + j).html("");
                 $("#price" + i + j).on("click", function(event) { });
                 continue;
             }
             question = category.questions[j];
-            $("#price" + i + j).html(question.value);
+            if (question.is_processed) {
+                $("#price" + i + j).html("");
+                $("#price" + i + j).on("click", function(event) { });
+                continue;
+            }
+            if (game.question != null && question.id == game.question.id) {
+                $("#price" + i + j).addClass("cell-clicked");
+            }
+            if (game.is_final_round) {
+                $("#price" + i + j).html("Убрать");
+            } else {
+                $("#price" + i + j).html(question.value);
+            }
             let finalI = i;
             let finalJ = j;
             $("#price" + i + j).on("click", function(event) { onCellClick(finalI, finalJ); });
@@ -134,18 +155,21 @@ function getGame() {
             },
             method: "GET",
             data: {
-                is_full: true
+                is_full: true,
+                changes_hash: cur_game_hash
             },
             success: function(result) {
-                game = result['game'];
-                onGameChanged();
+                if ('game' in result) {
+                    game = result['game'];
+                    cur_game_hash = game.changes_hash;
+                    onGameChanged();
+                }
             },
             error: function(data) {
                 if ("responseJSON" in data) {
                     showError(data.responseJSON.description);
                     if (data.responseJSON.code == 101) {
                         setCookie("admin_token", "", 10);
-                        prevState = STATE_NONE;
                         game = null;
                         toDefaultState();
                     }
@@ -155,9 +179,7 @@ function getGame() {
 }
 
 function onGameChanged() {
-    if (prevState == game.state && game.state != STATE_WAITING_FOR_PLAYERS) return;
     toDefaultState();
-    prevState = game.state;
     bindPlayers();
     $("#token").html(game.token)
     if (selectedQuestionId != 0) {
@@ -187,8 +209,9 @@ function onGameChanged() {
         $("#main_info").html("Выберите вопрос");
         $("#next").css('visibility', 'visible');
     }
-    if (game.state == STATE_QUESTION) {
+    if ([STATE_QUESTION_EVENT, STATE_QUESTION].includes(game.state)) {
         bindTable();
+        $("#next").css('visibility','visible');
         if (game.question != null) {
             let text = ""
             if (game.question.type == QUESTION_TYPE_AUCTION) text += "Вопрос-аукцион\n";
@@ -203,17 +226,60 @@ function onGameChanged() {
             if (game.question.comment) text += "Комментарий: " + game.question.comment + "\n";
             $("#main_info").html(text);
 
-
-            if ([QUESTION_TYPE_AUCTION, QUESTION_TYPE_BAG_CAT] in game.question.type) {
-                $("#bet_input").css('visibility','hidden');
+            if ([QUESTION_TYPE_AUCTION, QUESTION_TYPE_BAG_CAT].includes(game.question.type)) {
+                $("#bet_input").css('visibility','visible');
+                $("#player1").addClass("cell-title-active");
+                $("#player2").addClass("cell-title-active");
+                $("#player3").addClass("cell-title-active");
+                if (selectedPlayerId != 0) {
+                    if (selectedPlayerId == game.players[0].id) {
+                        $("#player1").addClass("cell-clicked");
+                    } else if (selectedPlayerId == game.players[1].id) {
+                        $("#player2").addClass("cell-clicked");
+                    } else if (selectedPlayerId == game.players[2].id) {
+                        $("#player3").addClass("cell-clicked");
+                    }
+                }
+            }
+            $("#answer_correct").css('visibility','visible');
+            $("#answer_wrong").css('visibility','visible');
+            if (isAnswerCorrect != null) {
+                if (isAnswerCorrect) {
+                    $("#answer_correct").addClass("cell-clicked");
+                } else {
+                    $("#answer_wrong").addClass("cell-clicked");
+                }
+            }
+        }
+        if (game.button_won_by_player_id != 0) {
+            if (game.button_won_by_player_id == game.players[0].id) {
+                $("#player1").addClass("cell-clicked");
+            } else if (game.button_won_by_player_id == game.players[1].id) {
+                $("#player2").addClass("cell-clicked");
+            } else if (game.button_won_by_player_id == game.players[2].id) {
+                $("#player3").addClass("cell-clicked");
             }
         }
 
     }
+    if (game.state == STATE_FINAL_END) {
+        $("#table").hide();
+        var text = "";
+        for (player in game.players) {
+            if (player.final_bet > 0) {
+                text += player.name + " " + player.final_answer + " " + player.final_bet + "\n";
+            }
+        }
+        $("#main_info").html("Итоги финала\n" + text);
+    }
+    if (game.state == STATE_GAME_END) {
+        $("#table").hide();
+        $("#main_info").html("Игра окончена");
+    }
 
 }
 
-function sendNextStateAction(questionId, playerId, balanceDiff) {
+function sendNextStateAction(questionId, playerId, balanceDiff, clearParams = false) {
     setViewEnabled(false);
     $.ajax({
         url: "/api/admin/next-state",
@@ -227,9 +293,15 @@ function sendNextStateAction(questionId, playerId, balanceDiff) {
             balance_diff: balanceDiff
         }),
         success: function(result) {
+            if (clearParams) {
+                selectedQuestionId = 0;
+                selectedPlayerId = 0;
+                isAnswerCorrect = null;
+            }
             setViewEnabled(true);
             bindTable();
             game = result['game'];
+            cur_game_hash = game.changes_hash;
             onGameChanged();
         },
         error: function(data) {
@@ -240,8 +312,50 @@ function sendNextStateAction(questionId, playerId, balanceDiff) {
 }
 
 function onNextClick() {
+    showError("&nbsp");
     if ([STATE_WAITING_FOR_PLAYERS, STATE_THEMES_ALL, STATE_THEMES_ROUND].includes(game.state)) {
         sendNextStateAction(0, 0, 0);
+    } else if (game.state == STATE_QUESTIONS) {
+        if (selectedQuestionId == 0) {
+            showError("Выберите вопрос");
+            return;
+        }
+        sendNextStateAction(selectedQuestionId, 0, 0, true);
+    } else if (game.state == STATE_QUESTION_EVENT) {
+        if (selectedPlayerId == 0) {
+            showError("Выберите игрока, отвечающего на вопрос");
+            return;
+        }
+        sendNextStateAction(0, 0, 0);
+    } else if (game.state == STATE_QUESTION) {
+        if (game.question.type == QUESTION_TYPE_STANDARD) {
+            if (game.button_won_by_player_id == 0) {
+                showError("Ни один игрок не выиграл кнопку");
+                return;
+            }
+        }
+        if (isAnswerCorrect == null) {
+            showError("Выберите, ответил ли игрок на вопрос верно или неверно");
+            return;
+        }
+        var balanceDiff = game.question.value * (isAnswerCorrect ? 1 : -1);
+        if ([QUESTION_TYPE_AUCTION, QUESTION_TYPE_BAG_CAT].includes(game.question.type)) {
+            if (selectedPlayerId == 0) {
+                showError("Выберите игрока, отвечающего на вопрос");
+                return;
+            }
+            var betValue = parseInt($("#bet_input").val());
+            if (Number.isNaN(betValue) || betValue <= 0) {
+                showError("Укажите стоимость вопроса");
+                return;
+            }
+            balanceDiff = betValue * (isAnswerCorrect ? 1 : -1);
+        }
+
+        sendNextStateAction(0, selectedPlayerId, balanceDiff, true);
+    } else {
+        showError("Кнопка далее в данный момент недоступна");
+        return;
     }
 }
 
@@ -267,6 +381,7 @@ $(document).ready(function() {
                 setViewEnabled(true);
                 clearApiErrors();
                 game = result['game'];
+                cur_game_hash = game.changes_hash;
                 setCookie("admin_token", game.token, 10);
                 onGameChanged();
             },
@@ -293,6 +408,7 @@ $(document).ready(function() {
             success: function(result) {
                 setViewEnabled(true);
                 game = result['game'];
+                cur_game_hash = game.changes_hash;
                 setCookie("admin_token", game.token, 10);
                 onGameChanged();
             },
@@ -305,9 +421,41 @@ $(document).ready(function() {
 
     $("#logout_button").on("click", function(event) {
         game = null;
-        prevState = STATE_NONE;
         setCookie("admin_token", "", 10);
         toDefaultState();
+    });
+
+    $("#player1").on("click", function(event) {
+        $("#player1").addClass("cell-clicked");
+        $("#player2").removeClass("cell-clicked");
+        $("#player3").removeClass("cell-clicked");
+        selectedPlayerId = game.players[0].id;
+    });
+
+    $("#player2").on("click", function(event) {
+        $("#player1").removeClass("cell-clicked");
+        $("#player2").addClass("cell-clicked");
+        $("#player3").removeClass("cell-clicked");
+        selectedPlayerId = game.players[1].id;
+    });
+
+    $("#player3").on("click", function(event) {
+        $("#player1").removeClass("cell-clicked");
+        $("#player2").removeClass("cell-clicked");
+        $("#player3").addClass("cell-clicked");
+        selectedPlayerId = game.players[2].id;
+    });
+
+    $("#answer_correct").on("click", function(event) {
+        $("#answer_correct").addClass("cell-clicked");
+        $("#answer_wrong").removeClass("cell-clicked");
+        isAnswerCorrect = true;
+    });
+
+    $("#answer_wrong").on("click", function(event) {
+        $("#answer_correct").removeClass("cell-clicked");
+        $("#answer_wrong").addClass("cell-clicked");
+        isAnswerCorrect = false;
     });
 
     $("#next").on("click", function(event) {

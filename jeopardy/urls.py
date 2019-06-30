@@ -9,6 +9,8 @@ urlpatterns = [
 
     path('api/player/auth', views.auth_player),
     path('api/player/button-click', views.handle_button_click),
+    path('api/player/final-bet', views.player_final_bet),
+    path('api/player/final-answer', views.player_final_answer),
 
     path('api/admin/create-game', views.create_game),
     path('api/admin/auth', views.auth_admin),

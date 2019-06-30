@@ -18,8 +18,16 @@
     <section>
         <div class="wrapper">
             <div class="column1">
+                <div id="bet_holder" class="auth-holder">
+                    <input id="bet_input" class="input" placeholder="Ставка">
+                    <a id="bet_button" class="text button button-active">СОХРАНИТЬ</a>
+                </div>
+                <div id="answer_holder" class="auth-holder">
+                    <input id="answer_input" class="input" placeholder="Ответ">
+                    <a id="answer_button" class="text button button-active">СОХРАНИТЬ</a>
+                </div>
                 <div id="button_holder" class="big-red-button-holder">
-                    <a class="big-red-button big-red-button-active"></a>
+                    <a id="button" class="big-red-button big-red-button-active"></a>
                 </div>
                 <div id="auth_holder" class="auth-holder">
                     <input id="name_input" class="input" placeholder="Имя">
@@ -28,9 +36,10 @@
                 </div>
             </div>
             <div class="column2">
-                <div class="user-info-holder" style="display:none">
-                    <p id="name" class="text-name">Имя</p>
-                    <p id="balance" class="text-balance">3000</p>
+                <div class="user-info-holder">
+                    <p id="name" class="text-name"></p>
+                    <p id="balance" class="text-balance"></p>
+                    <p id="info" class="text-name"></p>
                 </div>
             </div>
         </div>

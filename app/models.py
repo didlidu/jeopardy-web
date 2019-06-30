@@ -1,4 +1,5 @@
 import datetime
+import uuid
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
@@ -19,6 +20,8 @@ class Game(models.Model):
     STATE_QUESTION_EVENT = 'question_event'
     STATE_QUESTION = 'question'
     STATE_QUESTION_END = 'question_end'
+    STATE_FINAL_END = 'final_end'
+    STATE_GAME_END = 'game_end'
 
     CHOICES_STATE = (
         (STATE_WAITING_FOR_PLAYERS, 'WaitingForPlayers'),
@@ -28,6 +31,8 @@ class Game(models.Model):
         (STATE_QUESTION_EVENT, 'QuestionEvent'),
         (STATE_QUESTION, 'Question'),
         (STATE_QUESTION_END, 'QuestionEnd'),
+        (STATE_FINAL_END, 'FinalEnd'),
+        (STATE_GAME_END, 'GameEnd'),
     )
 
     token = models.CharField(max_length=25, unique=True)
@@ -39,6 +44,7 @@ class Game(models.Model):
     final_round = models.IntegerField(default=0, blank=True)  # 0 for no final
     state = models.CharField(max_length=25, choices=CHOICES_STATE, default=STATE_WAITING_FOR_PLAYERS, blank=True)
     button_won_by = models.ForeignKey('Player', on_delete=models.SET_NULL, blank=True, null=True, related_name='+')
+    changes_hash = models.CharField(max_length=255, default='', blank=True)
 
     @staticmethod
     def get_by_token_or_rise(token: str):
@@ -53,6 +59,10 @@ class Game(models.Model):
     def get_all_categories(self):
         return self.categories.all()
 
+    def register_changes(self):
+        self.changes_hash = uuid.uuid4().hex
+        self.save()
+
 
 class Player(models.Model):
     created = models.DateTimeField(default=datetime.datetime.utcnow, blank=True)
@@ -60,6 +70,8 @@ class Player(models.Model):
     name = models.CharField(max_length=255)
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='players')
     balance = models.IntegerField(default=0, blank=True)
+    final_bet = models.IntegerField(default=0, blank=True)
+    final_answer = models.TextField(default='', blank=True)
 
     @staticmethod
     def get_by_id_or_rise(id):

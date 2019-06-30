@@ -22,6 +22,24 @@ class ButtonClickRequestEntity(BaseRequestEntity):
         return self
 
 
+class FinalBetRequestEntity(BaseRequestEntity):
+    player_id = 0
+    bet = 0
+
+    def verify(self):
+        self.raise_on_empty(player_id=self.player_id, bet=self.bet)
+        return self
+
+
+class FinalAnswerRequestEntity(BaseRequestEntity):
+    player_id = 0
+    answer = 0
+
+    def verify(self):
+        self.raise_on_empty(player_id=self.player_id, answer=self.answer)
+        return self
+
+
 class EditStateRequestEntity(BaseRequestEntity):
     question_id = 0
     player_id = 0
@@ -33,12 +51,16 @@ class PlayerEntity:
     name = ''
     last_activity = None
     balance = 0
+    final_bet = 0
+    final_answer = ''
 
     def __init__(self, player):
         self.id = player.id
         self.name = player.name
         self.last_activity = player.last_activity
         self.balance = player.balance
+        self.final_bet = player.final_bet
+        self.final_answer = player.final_answer
 
 
 class QuestionEntity:
@@ -89,11 +111,13 @@ class GameEntity:
     round = 0
     last_round = 0
     final_round = 0
+    is_final_round = False
     state = ''
     button_won_by_player_id = 0
     question = None
     players = None
     categories = []
+    changes_hash = ''
 
     def __init__(self, game, is_full=False):
         from app.models import Game
@@ -102,6 +126,7 @@ class GameEntity:
         self.created = game.created
         self.expired = game.expired
         self.round = game.round
+        self.is_final_round = game.final_round != 0 and game.round == game.final_round
         self.last_round = game.last_round
         self.final_round = game.final_round
         self.state = game.state
@@ -113,3 +138,4 @@ class GameEntity:
                 self.categories = [CategoryEntity(category) for category in game.get_all_categories()]
             else:
                 self.categories = [CategoryEntity(category) for category in game.get_current_categories()]
+        self.changes_hash = game.changes_hash

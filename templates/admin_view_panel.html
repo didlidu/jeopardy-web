@@ -5,61 +5,67 @@
         <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/snackbar.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/admin_view.css' %}">
-        <script>
-            var csrf_token = "{{ csrf_token }}";
-        </script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="{% static 'js/main.js' %}"></script>
+        <script src="{% static 'js/admin_view.js' %}"></script>
     </head>
 <body>
 
     <div class="main">
+
+        <div id="auth" class="auth-holder">
+            <input id="token_input" class="input" placeholder="Код игры">
+            <a id="auth_button" class="text button button-active">ВОЙТИ</a>
+        </div>
+
         <div id="table" class="content" style="display:none">
             <div class="table-row">
-                <div class="cell cell-title"><p class="cell-text">Заголовок</p></div>
-                <div class="cell cell-price"><p class="cell-text">100</p></div>
-                <div class="cell cell-price"><p class="cell-text">200</p></div>
-                <div class="cell cell-price"><p class="cell-text">300</p></div>
-                <div class="cell cell-price"><p class="cell-text">400</p></div>
-                <div class="cell cell-price"><p class="cell-text">500</p></div>
+                <div id="title0" class="cell cell-title"></div>
+                <div id="price00" class="cell cell-price"></div>
+                <div id="price01" class="cell cell-price"></div>
+                <div id="price02" class="cell cell-price"></div>
+                <div id="price03" class="cell cell-price"></div>
+                <div id="price04" class="cell cell-price"></div>
             </div>
             <div class="table-row">
-                <div class="cell cell-title"><p class="cell-text">Заголовок</p></div>
-                <div class="cell cell-price"><p class="cell-text">100</p></div>
-                <div class="cell cell-price"><p class="cell-text">200</p></div>
-                <div class="cell cell-price"><p class="cell-text">300</p></div>
-                <div class="cell cell-price"><p class="cell-text">400</p></div>
-                <div class="cell cell-price"><p class="cell-text">500</p></div>
+                <div id="title1" class="cell cell-title"></div>
+                <div id="price10" class="cell cell-price"></div>
+                <div id="price11" class="cell cell-price"></div>
+                <div id="price12" class="cell cell-price"></div>
+                <div id="price13" class="cell cell-price"></div>
+                <div id="price14" class="cell cell-price"></div>
             </div>
             <div class="table-row">
-                <div class="cell cell-title"><p class="cell-text">Заголовок</p></div>
-                <div class="cell cell-price"><p class="cell-text">100</p></div>
-                <div class="cell cell-price"><p class="cell-text">200</p></div>
-                <div class="cell cell-price"><p class="cell-text">300</p></div>
-                <div class="cell cell-price"><p class="cell-text">400</p></div>
-                <div class="cell cell-price"><p class="cell-text">500</p></div>
+                <div id="title2" class="cell cell-title"></div>
+                <div id="price20" class="cell cell-price"></div>
+                <div id="price21" class="cell cell-price"></div>
+                <div id="price22" class="cell cell-price"></div>
+                <div id="price23" class="cell cell-price"></div>
+                <div id="price24" class="cell cell-price"></div>
             </div>
             <div class="table-row">
-                <div class="cell cell-title"><p class="cell-text">Заголовок</p></div>
-                <div class="cell cell-price"><p class="cell-text">100</p></div>
-                <div class="cell cell-price"><p class="cell-text">200</p></div>
-                <div class="cell cell-price"><p class="cell-text">300</p></div>
-                <div class="cell cell-price"><p class="cell-text">400</p></div>
-                <div class="cell cell-price"><p class="cell-text">500</p></div>
+                <div id="title3" class="cell cell-title"></div>
+                <div id="price30" class="cell cell-price"></div>
+                <div id="price31" class="cell cell-price"></div>
+                <div id="price32" class="cell cell-price"></div>
+                <div id="price33" class="cell cell-price"></div>
+                <div id="price34" class="cell cell-price"></div>
             </div>
             <div class="table-row">
-                <div class="cell cell-title"><p class="cell-text">Заголовок</p></div>
-                <div class="cell cell-price"><p class="cell-text">100</p></div>
-                <div class="cell cell-price"><p class="cell-text">200</p></div>
-                <div class="cell cell-price"><p class="cell-text">300</p></div>
-                <div class="cell cell-price"><p class="cell-text">400</p></div>
-                <div class="cell cell-price"><p class="cell-text">500</p></div>
+                <div id="title4" class="cell cell-title"></div>
+                <div id="price40" class="cell cell-price"></div>
+                <div id="price41" class="cell cell-price"></div>
+                <div id="price42" class="cell cell-price"></div>
+                <div id="price43" class="cell cell-price"></div>
+                <div id="price44" class="cell cell-price"></div>
             </div>
             <div class="table-row">
-                <div class="cell cell-title"><p class="cell-text">Заголовок</p></div>
-                <div class="cell cell-price"><p class="cell-text">100</p></div>
-                <div class="cell cell-price"><p class="cell-text">200</p></div>
-                <div class="cell cell-price"><p class="cell-text">300</p></div>
-                <div class="cell cell-price"><p class="cell-text">400</p></div>
-                <div class="cell cell-price"><p class="cell-text">500</p></div>
+                <div id="title5" class="cell cell-title"></div>
+                <div id="price50" class="cell cell-price"></div>
+                <div id="price51" class="cell cell-price"></div>
+                <div id="price52" class="cell cell-price"></div>
+                <div id="price53" class="cell cell-price"></div>
+                <div id="price54" class="cell cell-price"></div>
             </div>
         </div>
 
@@ -115,25 +121,18 @@
             <div class="table-row table-row-final">
                 <div class="cell cell-title cell-final"><p class="cell-text">Тема финала</p></div>
             </div>
+            <div class="table-row table-row-final">
+                <div class="cell cell-title cell-final"><p class="cell-text">Тема финала</p></div>
+            </div>
         </div>
 
-        <div id="questionText" class="content question-text" style="display:none">
-            <p class="cell-text" style="padding: 50px 50px 50px 50px">
-                Длинный длинный длинный длинный длинный длинный длинный длинный длинный длинный
-                длинный длинный длинный длинный длинный длинный длинный длинный длинный длинный длинный длинный
-                длинный длинный длинный длинный длинный длинный длинный длинный длинный длинный длинный длинный
-                длинный вопрос
-            </p>
-        </div>
+        <div id="questionText" class="content question-text" style="display:none; margin: 50px 50px 50px 50px"></div>
 
-        <div id="event" class="content event-text">
-            <p class="cell-text" style="padding: 50px 50px 50px 50px">
-                Кот в мешке
-            </p>
-        </div>
+        <div id="event" class="content event-text" style="display:none; margin: 50px 50px 50px 50px"></div>
 
         <div id="questionImage" class="content" style="display:none">
             <img
+                id="questionImageImg"
                 class="question-image"
                 src="https://images.freeimages.com/images/large-previews/a0c/daffodil-1378489.jpg"
                 alt="Ошибка при загрузке изображения">
@@ -142,11 +141,12 @@
     </div>
 
     <footer>
-        <div class="non-selectable-cell footer-cell-title"><p class="cell-text">УЧАСТНИК1</p></div>
-        <div class="non-selectable-cell footer-cell-title"><p class="cell-text">УЧАСТНИК2</p></div>
-        <div class="non-selectable-cell footer-cell-title"><p class="cell-text">УЧАСТНИК3</p></div>
-        <div class="cell footer-cell-title"><p class="cell-text">Настройки</p></div>
-        <div class="cell footer-cell-title"><p class="cell-text">Далее</p></div>
+        <div id="player0" class="non-selectable-cell footer-cell-title"></div>
+        <div id="player1" class="non-selectable-cell footer-cell-title"></div>
+        <div id="player2" class="non-selectable-cell footer-cell-title"></div>
+        <div id="token" class="non-selectable-cell footer-cell-title"></div>
     </footer>
+
+    <div id="snackbar">Some text some message..</div>
 
 </body>
