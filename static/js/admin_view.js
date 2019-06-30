@@ -30,7 +30,7 @@ function toDefaultState() {
     $("#topics_all").hide();
     $("#topics_final").hide();
     $("#questionText").hide();
-    $("#event").show();
+    $("#event").hide();
     $("#questionImage").hide();
 
     $("#player0").show();
