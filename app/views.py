@@ -190,11 +190,15 @@ def next_state(request):
             questions_count = 0
             question.is_processed = True
             question.save()
+            tmp_question = None
             for category in game.get_current_categories():
-                questions_count += category.questions.filter(is_processed=False).count()
+                tmp_count = category.questions.filter(is_processed=False).count()
+                if tmp_count >= 1:
+                    tmp_question = category.questions.filter(is_processed=False)[0]
+                questions_count += tmp_count
             if questions_count == 1:
                 game.state = Game.STATE_QUESTION_EVENT
-                game.question = question
+                game.question = tmp_question
                 game.save()
         else:
             if question.type == Question.TYPE_STANDARD:
@@ -250,10 +254,36 @@ def skip_question(request):
     if game.final_round != 0 and game.round == game.final_round:
         raise AppException(UNABLE_TO_SKIP_QUESTION)
     if game.state in (Game.STATE_QUESTION_EVENT, Game.STATE_QUESTION):
+        game.button_won_by = None
+        game.save()
         process_question_end(game)
         game.register_changes()
     else:
         raise AppException(UNABLE_TO_SKIP_QUESTION)
+    return json_response({
+        'game': GameEntity(game, is_full=True)
+    })
+
+
+@csrf_exempt
+@app_view
+def set_players_balance(request):
+    game = Game.get_by_token_or_rise(request.token)
+    #request_entity = ChangeBalanceRequestEntity(request.body)
+    return json_response({
+        'game': GameEntity(game, is_full=True)
+    })
+
+
+@csrf_exempt
+@app_view
+def set_round(request, round_number):
+    game = Game.get_by_token_or_rise(request.token)
+    game.round = round_number
+    if game.categories.filter(round=game.round).count() == 0:
+        game.state = Game.STATE_GAME_END
+    game.register_changes()
+    game.save()
     return json_response({
         'game': GameEntity(game, is_full=True)
     })

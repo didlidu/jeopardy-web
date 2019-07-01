@@ -147,7 +147,7 @@ footer {
     display: flex;
 }
 
-.non-selectable-cell {
+.no-background-cell {
     margin: 10px 10px 10px 10px;
     display: flex;
     align-items: center;
@@ -157,8 +157,16 @@ footer {
 .footer-cell-title {
     flex: 1;
     font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
-    font-size: 20px;
+    white-space: pre-line;
+    line-height: 110%;
+    font-size: 30px;
     color: white;
     text-transform: uppercase;
     text-align: center;
+}
+
+.top-right-corner {
+    position:absolute;
+    right:10px;
+    top  :10px;
 }

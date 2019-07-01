@@ -211,6 +211,7 @@ function onGameChanged() {
     }
     if ([STATE_QUESTION_EVENT, STATE_QUESTION].includes(game.state)) {
         bindTable();
+        $("#skip_question").show();
         $("#next").css('visibility','visible');
         if (game.question != null) {
             let text = ""
@@ -265,7 +266,7 @@ function onGameChanged() {
     if (game.state == STATE_FINAL_END) {
         $("#table").hide();
         var text = "";
-        for (player in game.players) {
+        for (var player in game.players) {
             if (player.final_bet > 0) {
                 text += player.name + " " + player.final_answer + " " + player.final_bet + "\n";
             }
@@ -423,6 +424,27 @@ $(document).ready(function() {
         game = null;
         setCookie("admin_token", "", 10);
         toDefaultState();
+    });
+
+    $("#skip_question").on("click", function(event) {
+        setViewEnabled(false);
+        $.ajax({
+            url: "/api/admin/skip-question",
+            headers: {
+                'Authorization': getCookie("admin_token"),
+            },
+            method: "POST",
+            success: function(result) {
+                setViewEnabled(true);
+                game = result['game'];
+                cur_game_hash = game.changes_hash;
+                onGameChanged();
+            },
+            error: function(data) {
+                handleApiError(data);
+                setViewEnabled(true);
+            }
+        });
     });
 
     $("#player1").on("click", function(event) {

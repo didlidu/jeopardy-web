@@ -51,7 +51,7 @@ function processGame() {
             $("#balance").html(player.balance);
         }
         $("#info").html("&nbsp");
-        if (game.state == STATE_QUESTION && !game.is_final_round) {
+        if (game.state == STATE_QUESTION && game.question.type == QUESTION_TYPE_STANDARD && !game.is_final_round) {
             if (game.button_won_by_player_id == 0) {
                 $("#button").addClass("big-red-button-active");
             } else if (game.button_won_by_player_id == parseInt(getCookie("player_id"))) {
@@ -61,8 +61,9 @@ function processGame() {
             }
         }
         if (game.is_final_round) {
+            $("#button_holder").hide();
             var cur_player = null;
-            for (player in game.players) {
+            for (var player in game.players) {
                 if (player.id == parseInt(getCookie("player_id"))) {
                     cur_player = player;
                     break;

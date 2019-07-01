@@ -22,8 +22,10 @@ function toDefaultState() {
     $("#token").html("")
     if (!isInited) {
         $("#auth").show();
+        $("#exit_button").hide();
     } else {
         $("#auth").hide();
+        $("#exit_button").show();
     }
 
     $("#table").hide();
@@ -37,18 +39,31 @@ function toDefaultState() {
     $("#player1").show();
     $("#player2").show();
 
+    $("#player0").html("")
+    $("#player1").html("")
+    $("#player2").html("")
+
     $("div.cell-clicked").removeClass("cell-clicked");
 }
 
 function bindPlayers() {
     if (game.players.length > 0) {
         $("#player0").html(game.players[0].name + "\n" + game.players[0].balance.toString());
+        if (game.players[0].id == game.button_won_by_player_id) {
+            $("#player0").addClass("cell-clicked");
+        }
     }
     if (game.players.length > 1) {
         $("#player1").html(game.players[1].name + "\n" + game.players[1].balance.toString());
+        if (game.players[1].id == game.button_won_by_player_id) {
+            $("#player1").addClass("cell-clicked");
+        }
     }
     if (game.players.length > 2) {
         $("#player2").html(game.players[2].name + "\n" + game.players[2].balance.toString());
+        if (game.players[2].id == game.button_won_by_player_id) {
+            $("#player2").addClass("cell-clicked");
+        }
     }
 }
 
@@ -78,6 +93,13 @@ function bindTable() {
             }
             $("#price" + i + j).html(question.value);
         }
+    }
+}
+
+function bindThemes() {
+    for (i = 0; i <= 17; i++) {
+        if (i >= game.categories.length) continue;
+        $("#theme" + i).html(game.categories[i].name);
     }
 }
 
@@ -122,6 +144,7 @@ function onGameChanged() {
 
     if (game.state == STATE_THEMES_ALL) {
         $("#topics_all").show();
+        bindThemes();
     }
     if (game.state == STATE_THEMES_ROUND || game.state == STATE_QUESTIONS) {
         $("#table").show();
@@ -136,12 +159,29 @@ function onGameChanged() {
     }
 
     if (game.state == STATE_QUESTION) {
-        if (game.question.image) { // TODO
+        if (game.question.audio) {
+            if (game.question.audio.startsWith("@")) {
+                new Audio("/media/" + game.token + "/Audio/" + game.question.audio.replace("@", "")).play()
+            } else {
+                new Audio(game.question.audio).play()
+            }
+            $("#questionText").html("Аудиофрагмент");
+        }
+        if (game.question.audio) {
+
+        }
+        if (game.question.image) {
             $("#questionImage").show();
-            $("#questionImageImg").attr("src", "/media/" + game.token + "/" + game.question.image);
-        } else {
+            if (game.question.image.startsWith("@")) {
+                $("#questionImageImg").attr(
+                    "src", "/media/" + game.token + "/Images/" + game.question.image.replace("@", ""));
+            } else {
+                $("#questionImageImg").attr("src", game.question.image);
+            }
+        }
+        if (!game.question.image && !game.question.video) {
             $("#questionText").show();
-            $("#questionText").html(game.question.text)
+            if (game.question.text) $("#questionText").html(game.question.text);
         }
     }
 
@@ -149,6 +189,7 @@ function onGameChanged() {
         $("#event").show();
         $("#event").html("Финал"); // TODO
     }
+
     if (game.state == STATE_GAME_END) {
         $("#event").show();
         $("#event").html("Конец игры");
@@ -180,6 +221,12 @@ $(document).ready(function() {
                 handleApiError(data);
             }
         });
+    });
+
+    $("#exit_button").on("click", function(event) {
+        game = null;
+        setCookie("admin_token", "", 10);
+        toDefaultState();
     });
 
     toDefaultState();

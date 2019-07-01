@@ -1,6 +1,8 @@
+from django.conf.urls.static import static
 from django.urls import path
 
 from app import views
+from jeopardy import settings
 
 urlpatterns = [
     path('', views.get_player_panel),
@@ -16,6 +18,7 @@ urlpatterns = [
     path('api/admin/auth', views.auth_admin),
     path('api/admin/next-state', views.next_state),
     path('api/admin/skip-question', views.skip_question),
+    path('api/admin/set-round/<int:round_number>', views.set_round),
 
     path('api/game', views.get_game),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
