@@ -70,7 +70,7 @@ function processGame() {
                     break;
                 }
             }
-            if (cur_player != null) {
+            if (cur_player != null && cur_player.balance > 0) {
                 if (game.state == STATE_QUESTION_EVENT && cur_player.final_bet <= 0) {
                     $("#bet_holder").show();
                 } else if (game.state == STATE_QUESTION && cur_player.final_bet > 0 && !cur_player.final_answer) {
@@ -156,7 +156,7 @@ $(document).ready(function() {
         processGame();
     });
 
-    $("#bet_holder").on("click", function(event) {
+    $("#bet_button").on("click", function(event) {
         var bet = parseInt($('#bet_input').val().trim());
         if (Number.isNaN(bet) || !bet) {
             showError("Введите ставку");
@@ -184,7 +184,7 @@ $(document).ready(function() {
         });
     });
 
-    $("#answer_holder").on("click", function(event) {
+    $("#answer_button").on("click", function(event) {
         var answer = $('#answer_input').val().trim();
         if (!answer) {
             showError("Введите ответ");

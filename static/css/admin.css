@@ -155,7 +155,9 @@ footer {
     padding: 20px 10px 20px 10px;
 }
 
-.auth-holder {}
+.auth-holder {
+
+}
 
 .inline { float:left; }
 
@@ -183,4 +185,6 @@ footer {
     box-shadow: 0 0 2px rgba(0, 0, 0, 0.30);
 }
 
-
+#token {
+    -moz-user-select: text; -webkit-user-select: text; -ms-user-select:text; user-select:text; -o-user-select:text;
+}

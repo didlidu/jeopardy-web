@@ -168,3 +168,11 @@ footer {
     right:10px;
     top  :10px;
 }
+
+#token {
+    -moz-user-select: text; -webkit-user-select: text; -ms-user-select:text; user-select:text; -o-user-select:text;
+}
+
+#event {
+    white-space: pre-line;
+}

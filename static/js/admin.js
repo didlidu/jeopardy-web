@@ -28,7 +28,8 @@ function setViewEnabled(isEnabled) {
 
 function toDefaultState() {
     var isInited = game != null;
-    $("#token").html("")
+    $("#token").html("");
+    $("#round").html("&nbsp");
     if (isInited) $("#auth_holder").hide(); else $("#auth_holder").show();
     if (isInited) $("#logout_holder").show(); else $("#logout_holder").hide();
 
@@ -105,7 +106,7 @@ function bindTable() {
             $("#title" + i).html("");
             for (j = 0; j < 5; j++) {
                 $("#price" + i + j).html("");
-                $("#price" + i + j).on("click", function(event) { });
+                $("#price" + i + j).off('click');
             }
             continue;
         }
@@ -114,13 +115,13 @@ function bindTable() {
         for (j = 0; j < 5; j++) {
             if (j >= category.questions.length) {
                 $("#price" + i + j).html("");
-                $("#price" + i + j).on("click", function(event) { });
+                $("#price" + i + j).off('click');
                 continue;
             }
             question = category.questions[j];
             if (question.is_processed) {
                 $("#price" + i + j).html("");
-                $("#price" + i + j).on("click", function(event) { });
+                $("#price" + i + j).off('click');
                 continue;
             }
             if (game.question != null && question.id == game.question.id) {
@@ -171,10 +172,33 @@ function getGame() {
         });
 }
 
+function generateQuestionDescription(question) {
+    var text = ""
+    if (question.type == QUESTION_TYPE_AUCTION) text += "Вопрос-аукцион\n";
+    if (question.type == QUESTION_TYPE_BAG_CAT) text += "Кот в мешке\n";
+    if (question.custom_theme) text += "Тема: " + question.custom_theme + "\n";
+    if (question.video) text += "Есть видеофрагмент\n";
+    if (question.audio) text += "Есть аудиофрагмент\n";
+    if (question.image) text += "Есть изображение\n";
+    if (question.value > 0) text += "Цена: " + question.value + "\n";
+    if (game.state == STATE_QUESTION || game.state == STATE_FINAL_END) {
+        text += "Вопрос: " + question.text + "\n";
+        text += "Ответ: " + question.answer + "\n";
+        if (question.comment) text += "Комментарий: " + question.comment + "\n";
+    }
+    if (!text) text = "&nbsp";
+    return text;
+}
+
 function onGameChanged() {
     toDefaultState();
     bindPlayers();
     $("#token").html(game.token)
+    if (!game.is_final_round) {
+        $("#round").html("Раунд " + game.round);
+    } else {
+        $("#round").html("Финал");
+    }
     if (selectedQuestionId != 0) {
         $("div.cell-clicked").removeClass("cell-clicked");
         selectedQuestionId = 0;
@@ -190,7 +214,14 @@ function onGameChanged() {
     }
     if (game.state == STATE_THEMES_ALL || game.state == STATE_THEMES_ROUND) {
         $("#table").hide();
-        var text = game.state == STATE_THEMES_ALL ? "Темы всей игры:\n" : "Темы раунда:\n";
+        var text = "";
+        if (game.is_final_round) {
+            text = "Темы финала:\n";
+        } else if (game.state == STATE_THEMES_ALL) {
+            text = "Темы всей игры:\n";
+        } else {
+            text = "Темы раунда:\n";
+        }
         game.categories.forEach(function(item, i, categories) {
             text += item.name + "\n";
         });
@@ -204,21 +235,10 @@ function onGameChanged() {
     }
     if ([STATE_QUESTION_EVENT, STATE_QUESTION].includes(game.state)) {
         bindTable();
-        $("#skip_question").show();
+        if (!game.is_final_round) $("#skip_question").show();
         $("#next").css('visibility','visible');
         if (game.question != null) {
-            let text = ""
-            if (game.question.type == QUESTION_TYPE_AUCTION) text += "Вопрос-аукцион\n";
-            if (game.question.type == QUESTION_TYPE_BAG_CAT) text += "Кот в мешке\n";
-            if (game.question.video) text += "Есть видеофрагмент\n";
-            if (game.question.audio) text += "Есть аудиофрагмент\n";
-            if (game.question.image) text += "Есть изображение\n";
-            if (game.question.custom_theme) text += "Тема: " + game.question.custom_theme + "\n";
-            text += "Цена: " + game.question.value + "\n";
-            text += "Вопрос: " + game.question.text + "\n";
-            text += "Ответ: " + game.question.answer + "\n";
-            if (game.question.comment) text += "Комментарий: " + game.question.comment + "\n";
-            $("#main_info").html(text);
+            $("#main_info").html(generateQuestionDescription(game.question));
 
             if ([QUESTION_TYPE_AUCTION, QUESTION_TYPE_BAG_CAT].includes(game.question.type)) {
                 $("#bet_input").css('visibility','visible');
@@ -254,18 +274,37 @@ function onGameChanged() {
                 $("#player3").addClass("cell-clicked");
             }
         }
+        if (game.is_final_round) {
+            if ((game.state == STATE_QUESTION_EVENT && game.players[0].final_bet > 0)
+                    || (game.state == STATE_QUESTION && game.players[0].final_answer)) {
+                $("#player1").addClass("cell-clicked");
+            }
+            if ((game.state == STATE_QUESTION_EVENT && game.players[1].final_bet > 0)
+                    || (game.state == STATE_QUESTION && game.players[1].final_answer)) {
+                $("#player2").addClass("cell-clicked");
+            }
+            if ((game.state == STATE_QUESTION_EVENT && game.players[2].final_bet > 0)
+                    || (game.state == STATE_QUESTION && game.players[2].final_answer)) {
+                $("#player3").addClass("cell-clicked");
+            }
+        }
 
     }
     if (game.state == STATE_FINAL_END) {
         $("#table").hide();
+        $("#next").css('visibility', 'visible');
         var text = "";
         for (var i in game.players) {
             var player = game.players[i];
+            var answer = player.final_answer;
+            if (!answer) {
+                answer = "Нет ответа";
+            }
             if (player.final_bet > 0) {
-                text += player.name + " " + player.final_answer + " " + player.final_bet + "\n";
+                text += player.name + " \"" + answer + "\" " + player.final_bet + "\n";
             }
         }
-        $("#main_info").html("Итоги финала\n" + text);
+        $("#main_info").html(generateQuestionDescription(game.question) + "\nИтоги финала\n" + text);
     }
     if (game.state == STATE_GAME_END) {
         $("#table").hide();
@@ -317,12 +356,17 @@ function onNextClick() {
         }
         sendNextStateAction(selectedQuestionId, 0, 0, true);
     } else if (game.state == STATE_QUESTION_EVENT) {
-        if (selectedPlayerId == 0) {
+        if (!game.is_final_round && selectedPlayerId == 0) {
             showError("Выберите игрока, отвечающего на вопрос");
             return;
         }
         sendNextStateAction(0, 0, 0);
     } else if (game.state == STATE_QUESTION) {
+
+        if (game.is_final_round) {
+            sendNextStateAction(0, 0, 0);
+        }
+
         if (game.question.type == QUESTION_TYPE_STANDARD) {
             if (game.button_won_by_player_id == 0) {
                 showError("Ни один игрок не выиграл кнопку");
@@ -348,6 +392,8 @@ function onNextClick() {
         }
 
         sendNextStateAction(0, selectedPlayerId, balanceDiff, true);
+    } else if (game.state == STATE_FINAL_END) {
+        sendNextStateAction(0, 0, 0);
     } else {
         showError("Кнопка далее в данный момент недоступна");
         return;

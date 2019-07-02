@@ -1,6 +1,7 @@
 
 var game = null;
 var cur_game_hash = "";
+var audio = new Audio();
 
 function showError(text) {
     var snackbar = $("#snackbar");
@@ -47,22 +48,17 @@ function toDefaultState() {
 }
 
 function bindPlayers() {
-    if (game.players.length > 0) {
-        $("#player0").html(game.players[0].name + "\n" + game.players[0].balance.toString());
-        if (game.players[0].id == game.button_won_by_player_id) {
-            $("#player0").addClass("cell-clicked");
+    for (var i = 0; i < game.players.length; i++) {
+        var player = game.players[i];
+        $("#player" + i).html(player.name + "\n" + player.balance);
+        if (player.id == game.button_won_by_player_id) {
+            $("#player" + i).addClass("cell-clicked");
         }
-    }
-    if (game.players.length > 1) {
-        $("#player1").html(game.players[1].name + "\n" + game.players[1].balance.toString());
-        if (game.players[1].id == game.button_won_by_player_id) {
-            $("#player1").addClass("cell-clicked");
-        }
-    }
-    if (game.players.length > 2) {
-        $("#player2").html(game.players[2].name + "\n" + game.players[2].balance.toString());
-        if (game.players[2].id == game.button_won_by_player_id) {
-            $("#player2").addClass("cell-clicked");
+        if (game.is_final_round) {
+            if ((game.state == STATE_QUESTION_EVENT && player.final_bet > 0)
+                    || (game.state == STATE_QUESTION && player.final_answer)) {
+                $("#player" + i).addClass("cell-clicked");
+            }
         }
     }
 }
@@ -106,7 +102,12 @@ function bindThemes() {
 function bindThemesFinal() {
     for (i = 0; i < 7; i++) {
         if (i >= game.categories.length) continue;
-        $("#theme_final" + i).html(game.categories[i].name);
+        var category = game.categories[i];
+        if (category.questions.length == 0 || category.questions[0].is_processed) {
+            $("#theme_final" + i).html("");
+        } else {
+            $("#theme_final" + i).html(category.name);
+        }
     }
 }
 
@@ -154,6 +155,8 @@ function onGameChanged() {
         bindThemes();
     }
     if (game.state == STATE_THEMES_ROUND || game.state == STATE_QUESTIONS) {
+        audio.pause();
+        audio.removeAttribute('src');
         if (game.is_final_round) {
             $("#topics_final").show();
             bindThemesFinal();
@@ -172,10 +175,14 @@ function onGameChanged() {
 
     if (game.state == STATE_QUESTION) {
         if (game.question.audio) {
-            if (game.question.audio.startsWith("@")) {
-                new Audio("/media/" + game.token + "/Audio/" + game.question.audio.replace("@", "")).play()
-            } else {
-                new Audio(game.question.audio).play()
+            if (!audio.src) {
+                if (game.question.audio.startsWith("@")) {
+                    audio.src = "/media/" + game.token + "/Audio/" + game.question.audio.replace("@", "");
+                    audio.play();
+                } else {
+                    audio.src = game.question.audio;
+                    audio.play();
+                }
             }
             $("#questionText").html("Аудиофрагмент");
         }
@@ -199,7 +206,7 @@ function onGameChanged() {
 
     if (game.state == STATE_FINAL_END) {
         $("#event").show();
-        $("#event").html("Итоги финала"); // TODO
+        $("#event").html("Итоги финала");
         var players = [];
         for (var i in game.players) {
             var player = game.players[i];
@@ -207,17 +214,17 @@ function onGameChanged() {
                 players.push(player)
             }
         }
-        var delay = 4000;
+        var delay = 5000;
         for (var i = 0; i < players.length; i++) {
             let finalI = i;
-            setInterval(function(){
+            setTimeout(function(){
                 var answer = players[finalI].final_answer;
                 if (!answer) {
                     answer = "Нет ответа";
                 }
-                $("#event").html(players[finalI].name + "\nОтвет:" + answer);
-                setInterval(function(){
-                    $("#event").html(players[finalI].name + "\nСтавка" + players[finalI].final_bet);
+                $("#event").html(players[finalI].name + "\n\"" + answer + "\"");
+                setTimeout(function(){
+                    $("#event").html(players[finalI].name + "\n" + players[finalI].final_bet);
                 }, delay);
             }, delay + delay * 2 * i);
         }

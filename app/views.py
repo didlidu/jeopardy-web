@@ -90,6 +90,7 @@ def player_final_bet(request):
             raise AppException(NOT_ENOUGH_BALANCE)
         player.final_bet = request_entity.bet
         player.save()
+        game.register_changes()
     return json_response({
         'game': GameEntity(game, is_full=False)
     })
@@ -106,6 +107,7 @@ def player_final_answer(request):
             raise AppException(FORBIDDEN)
         player.final_answer = request_entity.answer
         player.save()
+        game.register_changes()
     return json_response({
         'game': GameEntity(game, is_full=False)
     })
@@ -280,6 +282,7 @@ def set_players_balance(request):
     player3 = game.players.all()[2]
     player3.balance = request_entity.player3_balance
     player3.save()
+    game.register_changes()
     return json_response({
         'game': GameEntity(game, is_full=True)
     })
@@ -290,6 +293,8 @@ def set_players_balance(request):
 def set_round(request, round_number):
     game = Game.get_by_token_or_rise(request.token)
     game.round = round_number
+    game.state = Game.STATE_THEMES_ROUND
+    game.button_won_by = None
     if game.categories.filter(round=game.round).count() == 0:
         game.state = Game.STATE_GAME_END
     game.register_changes()
