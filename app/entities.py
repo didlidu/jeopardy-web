@@ -40,6 +40,20 @@ class FinalAnswerRequestEntity(BaseRequestEntity):
         return self
 
 
+class ChangeBalanceRequestEntity(BaseRequestEntity):
+    player1_balance = 0
+    player2_balance = 0
+    player3_balance = 0
+
+    def verify(self):
+        self.raise_on_empty(
+            player1_balance=self.player1_balance,
+            player2_balance=self.player2_balance,
+            player3_balance=self.player3_balance
+        )
+        return self
+
+
 class EditStateRequestEntity(BaseRequestEntity):
     question_id = 0
     player_id = 0

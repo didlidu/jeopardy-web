@@ -7,15 +7,14 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.db import transaction
 from django.shortcuts import render
-from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
 from app.entities import AuthRequestEntity, GameEntity, ButtonClickRequestEntity, EditStateRequestEntity, \
-    FinalBetRequestEntity, FinalAnswerRequestEntity
+    FinalBetRequestEntity, FinalAnswerRequestEntity, ChangeBalanceRequestEntity
 from app.game_parser import unzip_file, parse_xml
 from app.models import Game, Player, Question
 from app.services.error_service import AppException, GAME_ALREADY_STARTED, GAME_EXPIRED, FORBIDDEN, NOT_ENOUGH_PLAYERS, \
-    NO_DATA, QUESTION_ALREADY_PROCESSED, BUTTON_NOT_WON, UNABLE_TO_SKIP_QUESTION, BETS_NOT_READY, NOT_ENOUGH_BALANCE
+    QUESTION_ALREADY_PROCESSED, BUTTON_NOT_WON, UNABLE_TO_SKIP_QUESTION, BETS_NOT_READY, NOT_ENOUGH_BALANCE
 from app.services.json_service import json_response
 from app.utils import app_view
 from jeopardy import settings
@@ -269,7 +268,18 @@ def skip_question(request):
 @app_view
 def set_players_balance(request):
     game = Game.get_by_token_or_rise(request.token)
-    #request_entity = ChangeBalanceRequestEntity(request.body)
+    request_entity = ChangeBalanceRequestEntity(request.body)
+    if game.players.count() < 3:
+        raise AppException(NOT_ENOUGH_PLAYERS)
+    player1 = game.players.all()[0]
+    player1.balance = request_entity.player1_balance
+    player1.save()
+    player2 = game.players.all()[1]
+    player2.balance = request_entity.player2_balance
+    player2.save()
+    player3 = game.players.all()[2]
+    player3.balance = request_entity.player3_balance
+    player3.save()
     return json_response({
         'game': GameEntity(game, is_full=True)
     })

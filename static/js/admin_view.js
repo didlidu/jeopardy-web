@@ -103,6 +103,13 @@ function bindThemes() {
     }
 }
 
+function bindThemesFinal() {
+    for (i = 0; i < 7; i++) {
+        if (i >= game.categories.length) continue;
+        $("#theme_final" + i).html(game.categories[i].name);
+    }
+}
+
 function getGame() {
     if (!getCookie("admin_token")) return;
     $.ajax({
@@ -147,8 +154,13 @@ function onGameChanged() {
         bindThemes();
     }
     if (game.state == STATE_THEMES_ROUND || game.state == STATE_QUESTIONS) {
-        $("#table").show();
-        bindTable();
+        if (game.is_final_round) {
+            $("#topics_final").show();
+            bindThemesFinal();
+        } else {
+            $("#table").show();
+            bindTable();
+        }
     }
 
     if (game.state == STATE_QUESTION_EVENT) {
@@ -167,8 +179,8 @@ function onGameChanged() {
             }
             $("#questionText").html("Аудиофрагмент");
         }
-        if (game.question.audio) {
-
+        if (game.question.video) {
+            $("#questionText").html("Видеофрагмент");
         }
         if (game.question.image) {
             $("#questionImage").show();
@@ -187,7 +199,29 @@ function onGameChanged() {
 
     if (game.state == STATE_FINAL_END) {
         $("#event").show();
-        $("#event").html("Финал"); // TODO
+        $("#event").html("Итоги финала"); // TODO
+        var players = [];
+        for (var i in game.players) {
+            var player = game.players[i];
+            if (player.final_bet > 0) {
+                players.push(player)
+            }
+        }
+        var delay = 4000;
+        for (var i = 0; i < players.length; i++) {
+            let finalI = i;
+            setInterval(function(){
+                var answer = players[finalI].final_answer;
+                if (!answer) {
+                    answer = "Нет ответа";
+                }
+                $("#event").html(players[finalI].name + "\nОтвет:" + answer);
+                setInterval(function(){
+                    $("#event").html(players[finalI].name + "\nСтавка" + players[finalI].final_bet);
+                }, delay);
+            }, delay + delay * 2 * i);
+        }
+
     }
 
     if (game.state == STATE_GAME_END) {

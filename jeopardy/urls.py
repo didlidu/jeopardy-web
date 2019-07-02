@@ -18,6 +18,7 @@ urlpatterns = [
     path('api/admin/auth', views.auth_admin),
     path('api/admin/next-state', views.next_state),
     path('api/admin/skip-question', views.skip_question),
+    path('api/admin/players/set-balance', views.set_players_balance),
     path('api/admin/set-round/<int:round_number>', views.set_round),
 
     path('api/game', views.get_game),

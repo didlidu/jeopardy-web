@@ -63,7 +63,8 @@ function processGame() {
         if (game.is_final_round) {
             $("#button_holder").hide();
             var cur_player = null;
-            for (var player in game.players) {
+            for (var i in game.players) {
+                var player = game.players[i];
                 if (player.id == parseInt(getCookie("player_id"))) {
                     cur_player = player;
                     break;

@@ -24,13 +24,6 @@ function clearApiErrors() {
 }
 
 function setViewEnabled(isEnabled) {
-    if (isEnabled) {
-        $("a.button").addClass("button-active");
-    } else {
-        $("a.button").removeClass("button-active");
-        //$("div.cell-title").removeClass("cell-title-active");
-        //$("div.cell-price").removeClass("cell-price-active");
-    }
 }
 
 function toDefaultState() {
@@ -266,7 +259,8 @@ function onGameChanged() {
     if (game.state == STATE_FINAL_END) {
         $("#table").hide();
         var text = "";
-        for (var player in game.players) {
+        for (var i in game.players) {
+            var player = game.players[i];
             if (player.final_bet > 0) {
                 text += player.name + " " + player.final_answer + " " + player.final_bet + "\n";
             }
@@ -424,6 +418,39 @@ $(document).ready(function() {
         game = null;
         setCookie("admin_token", "", 10);
         toDefaultState();
+    });
+
+    $("#players_save_button").on("click", function(event) {
+        var balance1 = parseInt($("#edit_balance1").val());
+        var balance2 = parseInt($("#edit_balance2").val());
+        var balance3 = parseInt($("#edit_balance3").val());
+        if (Number.isNaN(balance1) || Number.isNaN(balance2) || Number.isNaN(balance3)) {
+            showError("Укажите баланс каждого игрока");
+            return;
+        }
+        setViewEnabled(false);
+        $.ajax({
+            url: "/api/admin/players/set-balance",
+            headers: {
+                'Authorization': getCookie("admin_token"),
+            },
+            method: "POST",
+            data: JSON.stringify({
+                player1_balance: balance1,
+                player2_balance: balance2,
+                player3_balance: balance3
+            }),
+            success: function(result) {
+                setViewEnabled(true);
+                game = result['game'];
+                cur_game_hash = game.changes_hash;
+                onGameChanged();
+            },
+            error: function(data) {
+                handleApiError(data);
+                setViewEnabled(true);
+            }
+        });
     });
 
     $("#skip_question").on("click", function(event) {
