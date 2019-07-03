@@ -1,11 +1,16 @@
 
 var game = null;
-
 var cur_game_hash = "";
+
+var isViewEnabled = true;
 
 var selectedQuestionId = 0;
 var selectedPlayerId = 0;
 var isAnswerCorrect = null;
+
+var isPlayer1FinalAnswerCorrect = null;
+var isPlayer2FinalAnswerCorrect = null;
+var isPlayer3FinalAnswerCorrect = null;
 
 function showError(text) {
     $("#error").html(text);
@@ -24,6 +29,7 @@ function clearApiErrors() {
 }
 
 function setViewEnabled(isEnabled) {
+    isViewEnabled = isEnabled;
 }
 
 function toDefaultState() {
@@ -39,6 +45,7 @@ function toDefaultState() {
     $("div.cell-price").removeClass("cell-price-active");
     $("#error").html("&nbsp");
     $("#main_info").html("&nbsp");
+    $("#final_bets").hide();
 
     $("#players_edit_holder").hide();
     $("#skip_question").hide();
@@ -255,13 +262,15 @@ function onGameChanged() {
                     }
                 }
             }
-            $("#answer_correct").css('visibility','visible');
-            $("#answer_wrong").css('visibility','visible');
-            if (isAnswerCorrect != null) {
-                if (isAnswerCorrect) {
-                    $("#answer_correct").addClass("cell-clicked");
-                } else {
-                    $("#answer_wrong").addClass("cell-clicked");
+            if (!game.is_final_round) {
+                $("#answer_correct").css('visibility','visible');
+                $("#answer_wrong").css('visibility','visible');
+                if (isAnswerCorrect != null) {
+                    if (isAnswerCorrect) {
+                        $("#answer_correct").addClass("cell-clicked");
+                    } else {
+                        $("#answer_wrong").addClass("cell-clicked");
+                    }
                 }
             }
         }
@@ -305,6 +314,36 @@ function onGameChanged() {
             }
         }
         $("#main_info").html(generateQuestionDescription(game.question) + "\nИтоги финала\n" + text);
+        $("#final_bets").show();
+        for (var i = 0; i < 3; i++) {
+            if (game.players[i].final_bet > 0) {
+                $("#final_bet_player" + i).show();
+                $("#final_bet_player" + i + "_name").html(game.players[i].name);
+                let finalI = i;
+                $("#final_bet_player" + i + "_correct").addClass("cell-title-active");
+                $("#final_bet_player" + i + "_correct").on("click", function(event) {
+                    if (finalI == 0) isPlayer1FinalAnswerCorrect = true;
+                    if (finalI == 1) isPlayer2FinalAnswerCorrect = true;
+                    if (finalI == 2) isPlayer3FinalAnswerCorrect = true;
+                    $("#final_bet_player" + finalI + "_correct").addClass("cell-clicked");
+                    $("#final_bet_player" + finalI + "_wrong").removeClass("cell-clicked");
+                });
+                $("#final_bet_player" + i + "_wrong").addClass("cell-title-active");
+                $("#final_bet_player" + i + "_wrong").on("click", function(event) {
+                    if (finalI == 0) isPlayer1FinalAnswerCorrect = false;
+                    if (finalI == 1) isPlayer2FinalAnswerCorrect = false;
+                    if (finalI == 2) isPlayer3FinalAnswerCorrect = false;
+                    $("#final_bet_player" + finalI + "_correct").removeClass("cell-clicked");
+                    $("#final_bet_player" + finalI + "_wrong").addClass("cell-clicked");
+                });
+            } else {
+                $("#final_bet_player" + i).hide();
+                if (i == 0) isPlayer1FinalAnswerCorrect = false;
+                if (i == 1) isPlayer2FinalAnswerCorrect = false;
+                if (i == 2) isPlayer3FinalAnswerCorrect = false;
+            }
+        }
+
     }
     if (game.state == STATE_GAME_END) {
         $("#table").hide();
@@ -393,6 +432,44 @@ function onNextClick() {
 
         sendNextStateAction(0, selectedPlayerId, balanceDiff, true);
     } else if (game.state == STATE_FINAL_END) {
+        if (isPlayer1FinalAnswerCorrect == null || isPlayer2FinalAnswerCorrect == null
+                || isPlayer3FinalAnswerCorrect == null) {
+            showError("Выберите правильность ответов игроков");
+            return;
+        }
+        var balance1 = game.players[0].balance;
+        if (game.players[0].final_bet > 0) {
+            balance1 += game.players[0].final_bet * (isPlayer1FinalAnswerCorrect ? 1 : -1)
+        }
+        var balance2 = game.players[1].balance;
+        if (game.players[1].final_bet > 0) {
+            balance2 += game.players[1].final_bet * (isPlayer2FinalAnswerCorrect ? 1 : -1)
+        }
+        var balance3 = game.players[2].balance;
+        if (game.players[2].final_bet > 0) {
+            balance3 += game.players[2].final_bet * (isPlayer3FinalAnswerCorrect ? 1 : -1)
+        }
+        setViewEnabled(false);
+        $.ajax({
+            url: "/api/admin/players/set-balance",
+            headers: {
+                'Authorization': getCookie("admin_token"),
+            },
+            method: "POST",
+            data: JSON.stringify({
+                player1_balance: balance1,
+                player2_balance: balance2,
+                player3_balance: balance3
+            }),
+            success: function(result) {
+                setViewEnabled(true);
+                sendNextStateAction(0, 0, 0);
+            },
+            error: function(data) {
+                handleApiError(data);
+                setViewEnabled(true);
+            }
+        });
         sendNextStateAction(0, 0, 0);
     } else {
         showError("Кнопка далее в данный момент недоступна");
@@ -467,6 +544,7 @@ $(document).ready(function() {
     });
 
     $("#players_save_button").on("click", function(event) {
+        if (!isViewEnabled) return;
         var balance1 = parseInt($("#edit_balance1").val());
         var balance2 = parseInt($("#edit_balance2").val());
         var balance3 = parseInt($("#edit_balance3").val());
@@ -500,6 +578,7 @@ $(document).ready(function() {
     });
 
     $("#skip_question").on("click", function(event) {
+        if (!isViewEnabled) return;
         setViewEnabled(false);
         $.ajax({
             url: "/api/admin/skip-question",
@@ -554,6 +633,7 @@ $(document).ready(function() {
     });
 
     $("#next").on("click", function(event) {
+        if (!isViewEnabled) return;
         onNextClick();
     });
 

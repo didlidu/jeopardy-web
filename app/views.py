@@ -299,6 +299,8 @@ def set_round(request, round_number):
         game.state = Game.STATE_GAME_END
     game.register_changes()
     game.save()
+    for category in game.categories.filter(round=game.round):
+        category.questions.all().update(is_processed=False)
     return json_response({
         'game': GameEntity(game, is_full=True)
     })

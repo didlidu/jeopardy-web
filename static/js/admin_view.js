@@ -35,6 +35,7 @@ function toDefaultState() {
     $("#questionText").hide();
     $("#event").hide();
     $("#questionImage").hide();
+    $("#question_video_holder").hide();
 
     $("#player0").show();
     $("#player1").show();
@@ -157,6 +158,8 @@ function onGameChanged() {
     if (game.state == STATE_THEMES_ROUND || game.state == STATE_QUESTIONS) {
         audio.pause();
         audio.removeAttribute('src');
+        $('#video').trigger('pause');
+        document.getElementById('video_source').removeAttribute('src');
         if (game.is_final_round) {
             $("#topics_final").show();
             bindThemesFinal();
@@ -187,7 +190,19 @@ function onGameChanged() {
             $("#questionText").html("Аудиофрагмент");
         }
         if (game.question.video) {
-            $("#questionText").html("Видеофрагмент");
+            $("#question_video_holder").show();
+            if (!$("#video_source").attr("src")) {
+                var video = document.getElementById('video');
+                var videoSource = document.getElementById('video_source');
+                if (game.question.video.startsWith("@")) {
+                    videoSource.setAttribute(
+                        'src', "/media/" + game.token + "/Video/" + game.question.video.replace("@", ""));
+                } else {
+                    videoSource.setAttribute('src', game.question.video);
+                }
+                video.load();
+                video.play();
+            }
         }
         if (game.question.image) {
             $("#questionImage").show();

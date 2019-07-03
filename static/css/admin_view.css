@@ -131,6 +131,11 @@ body {
     object-fit: contain;
 }
 
+.question-video {
+    width: 100%;
+    height: 100%;
+}
+
 .bottom {
     position:absolute;
     bottom:0;

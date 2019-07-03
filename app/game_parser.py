@@ -67,7 +67,7 @@ def parse_xml(filename, game):
                     elif atom.get('type') == 'voice':
                         audio = atom.text
                     elif atom.get('type') == 'video':
-                        audio = atom.text
+                        video = atom.text
                     elif atom.text:
                         text = atom.text
                 right_answer = ''
