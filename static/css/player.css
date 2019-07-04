@@ -13,7 +13,7 @@ header {
 section {
     display: flex;
     flex-flow: column nowrap;
-    max-width: 1280px;
+    max-width: 1000px;
     margin: 0 auto;
     padding: 60px 11px 5px 10px;
 }
@@ -142,10 +142,13 @@ section {
 }
 
 .input {
+    box-sizing: border-box;
+    text-transform:uppercase;
     display: block;
 	padding: 10px 20px;
+	margin: 20px 0px;
 	background: #f4f7f8;
-	margin: 10px auto;
+	width:100%;
 	background: #f4f7f8;
 	border-radius: 8px;
 	font-size: 20px;

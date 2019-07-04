@@ -7,10 +7,13 @@ class AuthRequestEntity(BaseRequestEntity):
 
     def verify_admin(self):
         self.raise_on_empty(token=self.token)
+        self.token = self.token.upper()
         return self
 
     def verify_player(self):
         self.raise_on_empty(token=self.token, name=self.name)
+        self.token = self.token.upper()
+        self.name = self.name.upper()
         return self
 
 

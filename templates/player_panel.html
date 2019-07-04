@@ -2,6 +2,7 @@
 {% load static %}
 <html>
     <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/snackbar.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/player.css' %}">
@@ -13,6 +14,8 @@
 
     <header>
         <a id="exit_button" class="exit-button text button button-active">ВЫХОД</a>
+        <a id="to_admin_button" target="_blank" rel="noopener noreferrer"
+           href="/admin/" class="text button button-active" style="float: right; margin: 7px;">Панель администратора</a>
     </header>
 
     <section>
