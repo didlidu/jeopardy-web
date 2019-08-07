@@ -1,7 +1,7 @@
 django
-# gunicorn
-# whitenoise
-# django-heroku
+gunicorn
+whitenoise
+django-heroku
 # dj-database-url
 python-dateutil
 # django-cors-headers
