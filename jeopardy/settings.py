@@ -11,7 +11,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '!g$v_9oy7m3&gqk@sg55-uy%6psv7d@xbj=mx@1@-8blx4hjih'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -58,7 +58,7 @@ WSGI_APPLICATION = 'jeopardy.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-if not DEBUG:
+if DEBUG:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -89,11 +89,10 @@ USE_TZ = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
+COMPRESS_ENABLED = os.environ.get('COMPRESS_ENABLED', False)
+
 STATIC_URL = '/static/'
-if not DEBUG:
-    STATICFILES_DIRS = [
-         os.path.join(BASE_DIR, "staticfiles"),
-    ]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
