@@ -2,7 +2,7 @@ django
 gunicorn
 whitenoise
 django-heroku
-dj-database-url
+# dj-database-url
 python-dateutil
 # django-cors-headers
 pillow
