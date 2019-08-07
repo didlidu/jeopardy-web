@@ -58,7 +58,7 @@ WSGI_APPLICATION = 'jeopardy.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-if DEBUG:
+if not DEBUG:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -90,7 +90,7 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
-if DEBUG:
+if not DEBUG:
     STATICFILES_DIRS = [
          os.path.join(BASE_DIR, "staticfiles"),
     ]
@@ -101,5 +101,5 @@ MEDIA_URL = '/media/'
 AUTH_TOKEN_HEADER_NAME = 'HTTP_AUTHORIZATION'
 
 # Activate Django-Heroku.
-if not DEBUG:
+if DEBUG:
     django_heroku.settings(locals())
