@@ -1,10 +1,9 @@
 django
-# gunicorn
-# whitenoise
-# django-heroku
-# dj-database-url
+gunicorn
+whitenoise
+django-heroku
 python-dateutil
-# django-cors-headers
 pillow
 requests
 boto3
+whitenoise
