@@ -232,7 +232,8 @@ def next_state(request):
             game.save()
 
             if game.question.type != Question.TYPE_STANDARD or request_entity.balance_diff > 0:
-                if game.question.is_question_end_required:
+                if game.question.post_text or game.question.post_image \
+                        or game.question.post_audio or game.question.post_video:
                     game.state = Game.STATE_QUESTION_END
                     game.save()
                 else:

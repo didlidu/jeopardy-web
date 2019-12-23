@@ -24,6 +24,7 @@ SECRET_KEY = '!g$v_9oy7m3&gqk@sg55-uy%6psv7d@xbj=mx@1@-8blx4hjih'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+IS_POST_EVENT_REQUIRED = True
 
 ALLOWED_HOSTS = ['*']
 

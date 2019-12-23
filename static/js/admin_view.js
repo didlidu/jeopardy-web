@@ -219,6 +219,49 @@ function onGameChanged() {
         }
     }
 
+    if (game.state == STATE_QUESTION_END) {
+        if (game.question.post_audio) {
+            if (!audio.src) {
+                if (game.question.post_audio.startsWith("@")) {
+                    audio.src = "/media/" + game.token + "/Audio/" + game.question.post_audio.replace("@", "");
+                    audio.play();
+                } else {
+                    audio.src = game.question.post_audio;
+                    audio.play();
+                }
+            }
+            $("#questionText").html("Аудиофрагмент");
+        }
+        if (game.question.post_video) {
+            $("#question_video_holder").show();
+            if (!$("#video_source").attr("src")) {
+                var video = document.getElementById('video');
+                var videoSource = document.getElementById('video_source');
+                if (game.question.post_video.startsWith("@")) {
+                    videoSource.setAttribute(
+                        'src', "/media/" + game.token + "/Video/" + game.question.post_video.replace("@", ""));
+                } else {
+                    videoSource.setAttribute('src', game.question.post_video);
+                }
+                video.load();
+                video.play();
+            }
+        }
+        if (game.question.post_image) {
+            $("#questionImage").show();
+            if (game.question.post_image.startsWith("@")) {
+                $("#questionImageImg").attr(
+                    "src", "/media/" + game.token + "/Images/" + game.question.post_image.replace("@", ""));
+            } else {
+                $("#questionImageImg").attr("src", game.question.post_image);
+            }
+        }
+        if (!game.question.post_image && !game.question.post_video) {
+            $("#questionText").show();
+            if (game.question.post_text) $("#questionText").html(game.question.post_text);
+        }
+    }
+
     if (game.state == STATE_FINAL_END) {
         $("#event").show();
         $("#event").html("Итоги финала");

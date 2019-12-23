@@ -5,6 +5,7 @@ from xml.etree import ElementTree
 import zipfile
 
 from app.models import Category, Question
+from jeopardy.settings import IS_POST_EVENT_REQUIRED
 
 
 def unpack_zipfile(filename, extract_dir, encoding='cp437'):
@@ -61,15 +62,37 @@ def parse_xml(filename, game):
                 image = None
                 audio = None
                 video = None
+
+                marker_flag = False
+                post_text = None
+                post_image = None
+                post_audio = None
+                post_video = None
+
                 for atom in question.find(namespace + 'scenario').findall(namespace + 'atom'):
                     if atom.get('type') == 'image':
-                        image = atom.text
+                        if marker_flag:
+                            post_image = atom.text
+                        else:
+                            image = atom.text
                     elif atom.get('type') == 'voice':
-                        audio = atom.text
+                        if marker_flag:
+                            post_audio = atom.text
+                        else:
+                            audio = atom.text
                     elif atom.get('type') == 'video':
-                        video = atom.text
+                        if marker_flag:
+                            post_video = atom.text
+                        else:
+                            video = atom.text
+                    elif atom.get('type') == 'marker':
+                        marker_flag = True
                     elif atom.text:
-                        text = atom.text
+                        if marker_flag:
+                            post_text = atom.text
+                        else:
+                            text = atom.text
+
                 right_answer = ''
                 for answer in question.find(namespace + 'right').findall(namespace + 'answer'):
                     right_answer += (answer.text + '   ') if answer.text else ''
@@ -79,16 +102,23 @@ def parse_xml(filename, game):
                         and question.find(namespace + 'info').find(namespace + 'comments') is not None:
                     comment = question.find(namespace + 'info').find(namespace + 'comments').text
 
+                if IS_POST_EVENT_REQUIRED and right_answer \
+                        and not post_text and not post_image and not post_audio and not post_video:
+                    post_text = right_answer
+
                 Question.objects.create(
                     custom_theme=custom_theme,
                     text=text,
                     image=image,
                     audio=audio,
                     video=video,
+                    post_text=post_text,
+                    post_image=post_image,
+                    post_audio=post_audio,
+                    post_video=post_video,
                     value=question_price,
                     answer=right_answer,
                     comment=comment,
-                    is_question_end_required=False,
                     type=type,
                     category=category
                 )

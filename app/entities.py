@@ -90,7 +90,6 @@ class QuestionEntity:
     value = 0
     answer = ''
     comment = ''
-    is_question_end_required = False
     type = ''
     is_processed = False
 
@@ -101,10 +100,13 @@ class QuestionEntity:
         self.image = question.image
         self.audio = question.audio
         self.video = question.video
+        self.post_text = question.post_text
+        self.post_image = question.post_image
+        self.post_audio = question.post_audio
+        self.post_video = question.post_video
         self.value = question.value
         self.answer = question.answer
         self.comment = question.comment
-        self.is_question_end_required = question.is_question_end_required
         self.type = question.type
         self.is_processed = question.is_processed
 

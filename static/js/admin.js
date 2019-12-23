@@ -299,6 +299,20 @@ function onGameChanged() {
         }
 
     }
+    if (game.state == STATE_QUESTION_END) {
+        bindTable();
+        text = ""
+        if (game.question.answer != game.question.post_text) text += "Ответ: " + game.question.answer + "\n";
+        if (game.question.comment) text += "Комментарий: " + game.question.comment + "\n";
+        text += "После вопроса: ";
+        if (game.question.post_video) text += "Видеофрагмент ";
+        if (game.question.post_audio) text += "Аудиофрагмент ";
+        if (game.question.post_image) text += "Изображение ";
+        if (game.question.post_text) text += game.question.post_text;
+        text += "\n";
+        $("#main_info").html(text);
+        $("#next").css('visibility', 'visible');
+    }
     if (game.state == STATE_FINAL_END) {
         $("#table").hide();
         $("#next").css('visibility', 'visible');
@@ -386,7 +400,7 @@ function sendNextStateAction(questionId, playerId, balanceDiff, clearParams = fa
 
 function onNextClick() {
     showError("&nbsp");
-    if ([STATE_WAITING_FOR_PLAYERS, STATE_THEMES_ALL, STATE_THEMES_ROUND].includes(game.state)) {
+    if ([STATE_WAITING_FOR_PLAYERS, STATE_THEMES_ALL, STATE_THEMES_ROUND, STATE_QUESTION_END].includes(game.state)) {
         sendNextStateAction(0, 0, 0);
     } else if (game.state == STATE_QUESTIONS) {
         if (selectedQuestionId == 0) {

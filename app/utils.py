@@ -93,7 +93,6 @@ def init_debug_data():
                     value=100 * j,
                     answer='answer ' + str(i) + ' ' + str(j),
                     comment='',
-                    is_question_end_required=False,
                     type=Question.TYPE_STANDARD,
                     category=category
                 )
@@ -106,7 +105,6 @@ def init_debug_data():
                     value=100 * j,
                     answer='answer ' + str(i) + ' ' + str(j),
                     comment='',
-                    is_question_end_required=False,
                     type=Question.TYPE_STANDARD,
                     category=category
                 )
@@ -118,7 +116,6 @@ def init_debug_data():
                 answer='answer ' + str(i) + ' ' + 'f',
                 value=0,
                 comment='',
-                is_question_end_required=False,
                 type=Question.TYPE_STANDARD,
                 category=category
             )
