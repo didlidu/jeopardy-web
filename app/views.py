@@ -258,7 +258,12 @@ def skip_question(request):
     if game.state in (Game.STATE_QUESTION_EVENT, Game.STATE_QUESTION):
         game.button_won_by = None
         game.save()
-        process_question_end(game)
+        if game.question.post_text or game.question.post_image \
+                or game.question.post_audio or game.question.post_video:
+            game.state = Game.STATE_QUESTION_END
+            game.save()
+        else:
+            process_question_end(game)
         game.register_changes()
     else:
         raise AppException(UNABLE_TO_SKIP_QUESTION)
