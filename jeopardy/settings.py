@@ -102,5 +102,5 @@ MEDIA_URL = '/media/'
 AUTH_TOKEN_HEADER_NAME = 'HTTP_AUTHORIZATION'
 
 # Activate Django-Heroku.
-if DEBUG:
+if not DEBUG:
     django_heroku.settings(locals())
